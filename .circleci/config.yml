@@ -27,7 +27,7 @@ jobs:
     executor: edahlseng/node
     steps:
       - edahlseng/release-pr:
-          ssh-fingerprint: 7b:93:ce:c6:ff:f0:80:3d:04:68:e5:db:45:3f:fa:f6
+          ssh-fingerprint: da:75:0b:32:cf:ea:fe:8f:c6:0e:6a:82:6c:fb:c4:78
   tag-and-publish-circleci:
     executor: circleci-cli/default
     steps:
@@ -37,6 +37,9 @@ jobs:
             echo "Not a release commit, exiting"
             circleci-agent step halt
           fi
+      - add_ssh_keys:
+          fingerprints:
+            - da:75:0b:32:cf:ea:fe:8f:c6:0e:6a:82:6c:fb:c4:78
       - run:
           name: Setup Git
           command: |
