@@ -1,0 +1,17 @@
+version: 2.1
+
+executors:
+  default:
+    docker:
+      - image: node:10.13.0-jessie
+
+jobs:
+  hello-world:
+    executor: default
+    steps:
+      - run: echo "Hello, World!"
+
+workflows:
+  hello-world:
+    jobs:
+      - hello-world
