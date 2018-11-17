@@ -45,41 +45,23 @@ commands:
             echo "Release commit, halting"
             circleci-agent step halt
           fi
-  tag-and-npm-publish:
-    parameters:
-      ssh-fingerprint:
-        type: string
+  halt-if-not-release-commit:
+    description: Check commit message for chore(release), halting job if false
     steps:
-      - get
-      - run:
-          name: Setup Git
-          command: |
-            mkdir -p ~/.ssh
-
-            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
-            ' >> ~/.ssh/known_hosts
-
-            git config --global user.email "edahlseng@users.noreply.github.com"
-            git config --global user.name "Release Bot"
-      - add_ssh_keys:
-          fingerprints:
-            - << parameters.ssh-fingerprint >>
       - run: |
-          commitMessageHeader=$(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1)
-
-          if [[ ! "$commitMessageHeader" =~ "chore\(release\):" ]]; then
-            echo "Not a release commit, exiting"
-            exit
+          if [[ ! $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ "chore\(release\):" ]]; then
+            echo "Release commit, halting"
+            circleci-agent step halt
           fi
-
-          version=$(echo "$commitMessageHeader" | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
+  tag:
+    steps:
+      - run: |
+          versionTag=$(echo $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
 
           echo "Tagging commit"
-          git tag "$version"
+          git tag "$versionTag"
           git push --tags
 
-          echo "Publishing to NPM"
-          npm publish
 jobs:
   install-dependencies-npm:
     executor: node
@@ -162,3 +144,28 @@ jobs:
                 "body": "This pull request creates a new release. It will be updated whenever a new commit is pushed to master."
               }
           EOF
+  tag-and-publish-npm:
+    executor: node
+    parameters:
+      ssh-fingerprint:
+        type: string
+    steps:
+      - get
+      - halt-if-not-release-commit
+      - run:
+          name: Setup Git
+          command: |
+            mkdir -p ~/.ssh
+
+            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+            ' >> ~/.ssh/known_hosts
+
+            git config --global user.email "edahlseng@users.noreply.github.com"
+            git config --global user.name "Release Bot"
+      - add_ssh_keys:
+          fingerprints:
+            - << parameters.ssh-fingerprint >>
+      - tag
+      - run: |
+          echo "Publishing to NPM"
+          npm publish
