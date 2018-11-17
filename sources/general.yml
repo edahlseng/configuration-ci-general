@@ -1,0 +1,148 @@
+version: "2.1"
+description: General continuous integration configuration
+executors:
+  node:
+    docker:
+      - image: node:10.13.0-jessie
+commands:
+  put-all:
+    description: Save all files to the workspaces
+    steps:
+      - persist_to_workspace:
+          root: . # relative to working_directory
+          paths: # relative to root
+            - .
+  put-directory:
+    description: Save all files to the workspaces
+    parameters:
+      path:
+        type: string
+    steps:
+      - persist_to_workspace:
+          root: . # relative to working_directory
+          paths: # relative to root
+            - << parameters.path >>
+  put-test-results:
+    description: Save test results
+    parameters:
+      path:
+        type: string
+    steps:
+      - store_test_results:
+          path: << parameters.path >>
+      - store_artifacts:
+          path: << parameters.path >>
+  get:
+    description: Load all files from workspace
+    steps:
+      - attach_workspace:
+          at: . # relative from working_directory
+  release-pr:
+    parameters:
+      ssh-fingerprint:
+        type: string
+    steps:
+      - get
+      - run:
+          name: Setup Git
+          command: |
+            mkdir -p ~/.ssh
+
+            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+            ' >> ~/.ssh/known_hosts
+
+            git config --global user.email "edahlseng@users.noreply.github.com"
+            git config --global user.name "Release Bot"
+      - add_ssh_keys:
+          fingerprints:
+            - << parameters.ssh-fingerprint >>
+      - run: git checkout -b ci/release
+      - run: git reset --hard origin/master
+      - run: npm run release
+      - run: git push origin ci/release --force
+      - run: |
+          if [[ $(git log --format=oneline -n 1 $CIRCLE_SHA1) =~ chore(release): ]]; then
+            exit
+          fi
+
+          curl -X POST \
+            -H 'Accept: application/vnd.github.v3+json' \
+            -H "Authorization: token $RELEASE_BOT_GITHUB_TOKEN" \
+            https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls \
+            --data @- \<<-EOF
+              {
+                "title": "New Release",
+                "head": "ci/release",
+                "base": "master",
+                "body": "This pull request creates a new release. It will be updated whenever a new commit is pushed to master."
+              }
+          EOF
+  tag-and-npm-publish:
+    parameters:
+      ssh-fingerprint:
+        type: string
+    steps:
+      - get
+      - run:
+          name: Setup Git
+          command: |
+            mkdir -p ~/.ssh
+
+            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+            ' >> ~/.ssh/known_hosts
+
+            git config --global user.email "edahlseng@users.noreply.github.com"
+            git config --global user.name "Release Bot"
+      - add_ssh_keys:
+          fingerprints:
+            - << parameters.ssh-fingerprint >>
+      - run: |
+          commitMessage=$(git log --format=oneline -n 1 $CIRCLE_SHA1)
+
+          if [[ ! "$commitMessage" =~ chore(release): ]]; then
+            exit
+          fi
+
+          version=$(echo "$commitMessage" | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
+
+          git tag "$version"
+          git push --tags
+
+          npm publish
+jobs:
+  install-dependencies-npm:
+    executor: node
+    steps:
+      - checkout
+      - put-all
+      - run: npm ci || npm install
+      - put-directory:
+          path: node_modules
+  lint-commit:
+    executor: node
+    steps:
+      - get
+      - run: npm run lint-report:commit -- --from origin/master
+      - put-test-results:
+          path: ./linting-results
+  lint-js:
+    executor: node
+    steps:
+      - get
+      - run: npm run lint-report:js
+      - put-test-results:
+          path: ./linting-results
+  lint-json:
+    executor: node
+    steps:
+      - get
+      - run: npm run lint-report:json
+      - put-test-results:
+          path: ./linting-results
+  lint-yaml:
+    executor: node
+    steps:
+      - get
+      - run: npm run lint-report:yaml
+      - put-test-results:
+          path: ./linting-results
