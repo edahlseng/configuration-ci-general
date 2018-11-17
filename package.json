@@ -1,0 +1,38 @@
+{
+  "name": "ci-configuration",
+  "private": true,
+  "version": "1.0.2",
+  "description": "Continuous Integration Configuration ------------------------------------",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint:json": "prettier --config .prettierrc.js --list-different '**/*.json'",
+    "lint": "npm run lint:commit -- --from master; npm run lint:json; npm run lint:yaml",
+    "lint-report:json": "mkdir -p ./linting-results/prettier-json && prettier-junit --config .prettierrc.js '**/*.json' > ./linting-results/prettier-json/report.xml",
+    "lint:commit": "commitlint",
+    "lint-report:commit": "mkdir -p ./linting-results/commitlint && commitlint --format commitlint-format-junit > ./linting-results/commitlint/report.xml",
+    "lint:yaml": "prettier --config .prettierrc.js --list-different '**/*.yaml' '**/*.yml'",
+    "lint-report:yaml": "mkdir -p ./linting-results/prettier-yaml && prettier-junit --config .prettierrc.js '**/*.yaml' '**/*.yml' > ./linting-results/prettier-yaml/report.xml",
+    "release": "standard-version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edahlseng/ci-configuration.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/edahlseng/ci-configuration/issues"
+  },
+  "homepage": "https://github.com/edahlseng/ci-configuration#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@eric.dahlseng/linter-configuration": "^0.3.0",
+    "standard-version": "^4.4.0"
+  },
+  "standard-version": {
+    "skip": {
+      "tag": true
+    }
+  }
+}

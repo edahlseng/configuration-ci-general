@@ -1,17 +1,107 @@
 version: 2.1
 
-executors:
-  default:
-    docker:
-      - image: node:10.13.0-jessie
+orbs:
+  circleci-cli: circleci/circleci-cli@0.1.1
+  orbs: circleci/orb-tools@2.0.2
+  edahlseng: edahlseng/general@1.0.1
 
 jobs:
-  hello-world:
-    executor: default
+  lint-circleci:
+    executor: circleci-cli/default
     steps:
-      - run: echo "Hello, World!"
+      - edahlseng/get
+      - run: |
+          for orb in sources/*; do
+            echo "Validating $orb"
+            circleci orb validate "$orb"
+          done
+  publish-circleci-dev:
+    executor: circleci-cli/default
+    steps:
+      - edahlseng/get
+      - orbs/publish:
+          orb-path: sources/general.yml
+          orb-ref: edahlseng/general@dev:$(echo "${CIRCLE_BRANCH//[^a-zA-Z0-9-]/-}" | tr '[:upper:]' '[:lower:]')
+          token-variable: $ORB_PUBLISHING_TOKEN
+  release-pr:
+    executor: edahlseng/node
+    steps:
+      - edahlseng/release-pr:
+          ssh-fingerprint: 7b:93:ce:c6:ff:f0:80:3d:04:68:e5:db:45:3f:fa:f6
+  tag-and-publish-circleci:
+    executor: circleci-cli/default
+    steps:
+      - edahlseng/get
+      - run: |
+          if [[ ! $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ "chore\(release\):" ]]; then
+            echo "Not a release commit, exiting"
+            circleci-agent step halt
+          fi
+      - run:
+          name: Setup Git
+          command: |
+            mkdir -p ~/.ssh
+
+            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+            ' >> ~/.ssh/known_hosts
+
+            git config --global user.email "edahlseng@users.noreply.github.com"
+            git config --global user.name "Release Bot"
+      - run: |
+          versionTag=$(echo $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
+
+          echo "Tagging commit"
+          git tag "$versionTag"
+          git push --tags
+      - orbs/publish:
+          orb-path: sources/general.yml
+          orb-ref: |
+            edahlseng/general@$(echo $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/\1/')
+          token-variable: $ORB_PUBLISHING_TOKEN
 
 workflows:
-  hello-world:
+  main:
     jobs:
-      - hello-world
+      - edahlseng/install-dependencies-npm
+      - edahlseng/lint-commit:
+          requires:
+            - edahlseng/install-dependencies-npm
+      - edahlseng/lint-json:
+          requires:
+            - edahlseng/install-dependencies-npm
+      - edahlseng/lint-yaml:
+          requires:
+            - edahlseng/install-dependencies-npm
+      - lint-circleci:
+          requires:
+            - edahlseng/install-dependencies-npm
+      - publish-circleci-dev:
+          context: Orb Publishing
+          requires:
+            - edahlseng/lint-commit
+            - edahlseng/lint-json
+            - edahlseng/lint-yaml
+            - lint-circleci
+          filters:
+            branches:
+              ignore: master
+      - release-pr:
+          context: Release Bot
+          requires:
+            - edahlseng/lint-commit
+            - edahlseng/lint-json
+            - edahlseng/lint-yaml
+            - lint-circleci
+          filters:
+            branches:
+              only: master
+      - tag-and-publish-circleci:
+          context: Orb Publishing
+          requires:
+            - edahlseng/lint-commit
+            - edahlseng/lint-json
+            - edahlseng/lint-yaml
+            - lint-circleci
+          filters:
+            branches:
+              only: master
