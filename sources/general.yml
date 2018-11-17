@@ -37,54 +37,14 @@ commands:
     steps:
       - attach_workspace:
           at: . # relative from working_directory
-  release-pr:
-    parameters:
-      ssh-fingerprint:
-        type: string
+  halt-if-release-commit:
+    description: Check commit message for chore(release), halting job if true
     steps:
-      - get
-      - run:
-          name: Setup Git
-          command: |
-            mkdir -p ~/.ssh
-
-            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
-            ' >> ~/.ssh/known_hosts
-
-            git config --global user.email "edahlseng@users.noreply.github.com"
-            git config --global user.name "Release Bot"
-      - add_ssh_keys:
-          fingerprints:
-            - << parameters.ssh-fingerprint >>
       - run: |
           if [[ $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ "chore\(release\):" ]]; then
-            echo "Release commit, exiting"
-            exit
+            echo "Release commit, halting"
+            circleci-agent step halt
           fi
-
-          echo "Creating branch"
-          git checkout -b ci/release
-          git reset --hard origin/master
-
-          echo "Creating release"
-          npm run release
-
-          echo "Pushing branch"
-          git push origin ci/release --force
-
-          echo "Attempting to create pull request"
-          curl -X POST \
-            -H 'Accept: application/vnd.github.v3+json' \
-            -H "Authorization: token $RELEASE_BOT_GITHUB_TOKEN" \
-            https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls \
-            --data @- \<<-EOF
-              {
-                "title": "New Release",
-                "head": "ci/release",
-                "base": "master",
-                "body": "This pull request creates a new release. It will be updated whenever a new commit is pushed to master."
-              }
-          EOF
   tag-and-npm-publish:
     parameters:
       ssh-fingerprint:
@@ -157,3 +117,48 @@ jobs:
       - run: npm run lint-report:yaml
       - put-test-results:
           path: ./linting-results
+  create-release-pr:
+    executor: node
+    parameters:
+      ssh-fingerprint:
+        type: string
+    steps:
+      - get
+      - halt-if-release-commit
+      - run:
+          name: Setup Git
+          command: |
+            mkdir -p ~/.ssh
+
+            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+            ' >> ~/.ssh/known_hosts
+
+            git config --global user.email "edahlseng@users.noreply.github.com"
+            git config --global user.name "Release Bot"
+      - add_ssh_keys:
+          fingerprints:
+            - << parameters.ssh-fingerprint >>
+      - run: |
+          echo "Creating branch"
+          git checkout -b ci/release
+          git reset --hard origin/master
+
+          echo "Creating release"
+          npm run release
+
+          echo "Pushing branch"
+          git push origin ci/release --force
+
+          echo "Attempting to create pull request"
+          curl -X POST \
+            -H 'Accept: application/vnd.github.v3+json' \
+            -H "Authorization: token $RELEASE_BOT_GITHUB_TOKEN" \
+            https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls \
+            --data @- \<<-EOF
+              {
+                "title": "New Release",
+                "head": "ci/release",
+                "base": "master",
+                "body": "This pull request creates a new release. It will be updated whenever a new commit is pushed to master."
+              }
+          EOF
