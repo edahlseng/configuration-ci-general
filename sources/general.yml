@@ -1,12 +1,16 @@
 version: 2.1
+
 description: General purpose continuous integration configuration
+
 orbs:
   circleci-cli: circleci/circleci-cli@0.1.1
   orbs: circleci/orb-tools@2.0.2
+
 executors:
   node:
     docker:
       - image: node:10.13.0-jessie
+
 commands:
   put-all:
     description: Save all files to the workspaces
@@ -73,6 +77,31 @@ commands:
       - run:
           name: Pushing tag to Git remote
           command: git push --tags
+  setup-git-user:
+    description: Configures Git so that actions are performed on behalf of the specified user
+    parameters:
+      git-ssh-fingerprint:
+        type: string
+      git-user-email:
+        type: string
+      git-user-name:
+        type: string
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - << parameters.git-ssh-fingerprint >>
+      - run:
+          name: Adding GitHub to known_hosts file
+          command: |
+            mkdir -p ~/.ssh
+
+            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+            ' >> ~/.ssh/known_hosts
+      - run:
+          name: Configuring Git user
+          command: |
+            git config --global user.email "<< parameters.git-user-email >>"
+            git config --global user.name "<< parameters.git-user-name >>"
 
 jobs:
   install-dependencies-npm:
@@ -147,22 +176,19 @@ jobs:
     parameters:
       git-ssh-fingerprint:
         type: string
+      git-user-email:
+        type: string
+      git-user-name:
+        type: string
+      github-access-token:
+        type: string
     steps:
       - get-workspace
       - halt-if-release-commit
-      - run:
-          name: Setting up Git user
-          command: |
-            mkdir -p ~/.ssh
-
-            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
-            ' >> ~/.ssh/known_hosts
-
-            git config --global user.email "edahlseng@users.noreply.github.com"
-            git config --global user.name "Release Bot"
-      - add_ssh_keys:
-          fingerprints:
-            - << parameters.git-ssh-fingerprint >>
+      - setup-git-user:
+          git-ssh-fingerprint: << parameters.git-ssh-fingerprint >>
+          git-user-email: << parameters.git-user-email >>
+          git-user-name: << parameters.git-user-name >>
       - run:
           name: Creating release branch
           command: |
@@ -179,7 +205,7 @@ jobs:
           command: |
             curl -X POST \
               -H 'Accept: application/vnd.github.v3+json' \
-              -H "Authorization: token $RELEASE_BOT_GITHUB_TOKEN" \
+              -H "Authorization: token << parameters.github-access-token >>" \
               https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls \
               --data @- \<<-EOF
                 {
@@ -194,22 +220,17 @@ jobs:
     parameters:
       git-ssh-fingerprint:
         type: string
+      git-user-email:
+        type: string
+      git-user-name:
+        type: string
     steps:
       - get-workspace
       - halt-if-not-release-commit
-      - run:
-          name: Setup Git
-          command: |
-            mkdir -p ~/.ssh
-
-            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
-            ' >> ~/.ssh/known_hosts
-
-            git config --global user.email "edahlseng@users.noreply.github.com"
-            git config --global user.name "Release Bot"
-      - add_ssh_keys:
-          fingerprints:
-            - << parameters.git-ssh-fingerprint >>
+      - setup-git-user:
+          git-ssh-fingerprint: << parameters.git-ssh-fingerprint >>
+          git-user-email: << parameters.git-user-email >>
+          git-user-name: << parameters.git-user-name >>
       - tag
       - run: |
           echo "Publishing to NPM"
@@ -218,6 +239,10 @@ jobs:
     executor: circleci-cli/default
     parameters:
       git-ssh-fingerprint:
+        type: string
+      git-user-email:
+        type: string
+      git-user-name:
         type: string
       orb-ref:
         description: A versionless orb-ref in the form <namespace>/<orb-name>
@@ -228,19 +253,10 @@ jobs:
     steps:
       - get-workspace
       - halt-if-not-release-commit
-      - add_ssh_keys:
-          fingerprints:
-            - << parameters.git-ssh-fingerprint >>
-      - run:
-          name: Setup Git
-          command: |
-            mkdir -p ~/.ssh
-
-            echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
-            ' >> ~/.ssh/known_hosts
-
-            git config --global user.email "edahlseng@users.noreply.github.com"
-            git config --global user.name "Release Bot"
+      - setup-git-user:
+          git-ssh-fingerprint: << parameters.git-ssh-fingerprint >>
+          git-user-email: << parameters.git-user-email >>
+          git-user-name: << parameters.git-user-name >>
       - tag
       - orbs/publish:
           orb-path: sources/index.yml
