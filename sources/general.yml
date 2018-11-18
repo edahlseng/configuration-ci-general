@@ -103,7 +103,7 @@ jobs:
   create-release-pr:
     executor: node
     parameters:
-      ssh-fingerprint:
+      git-ssh-fingerprint:
         type: string
     steps:
       - get
@@ -120,7 +120,7 @@ jobs:
             git config --global user.name "Release Bot"
       - add_ssh_keys:
           fingerprints:
-            - << parameters.ssh-fingerprint >>
+            - << parameters.git-ssh-fingerprint >>
       - run: |
           echo "Creating branch"
           git checkout -b ci/release
@@ -148,7 +148,7 @@ jobs:
   tag-and-publish-npm:
     executor: node
     parameters:
-      ssh-fingerprint:
+      git-ssh-fingerprint:
         type: string
     steps:
       - get
@@ -165,7 +165,7 @@ jobs:
             git config --global user.name "Release Bot"
       - add_ssh_keys:
           fingerprints:
-            - << parameters.ssh-fingerprint >>
+            - << parameters.git-ssh-fingerprint >>
       - tag
       - run: |
           echo "Publishing to NPM"
