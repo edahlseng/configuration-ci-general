@@ -41,7 +41,7 @@ commands:
     description: Check commit message for chore(release), halting job if true
     steps:
       - run: |
-          if [[ $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ "chore\(release\):" ]]; then
+          if [[ $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
             echo "Release commit, halting"
             circleci-agent step halt
           fi
@@ -49,7 +49,7 @@ commands:
     description: Check commit message for chore(release), halting job if false
     steps:
       - run: |
-          if [[ ! $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ "chore\(release\):" ]]; then
+          if [[ ! $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
             echo "Release commit, halting"
             circleci-agent step halt
           fi

@@ -28,7 +28,7 @@ jobs:
     steps:
       - general/get
       - run: |
-          if [[ ! $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ "chore\(release\):" ]]; then
+          if [[ ! $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
             echo "Not a release commit, exiting"
             circleci-agent step halt
           fi
