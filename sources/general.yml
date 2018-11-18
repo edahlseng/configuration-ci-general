@@ -1,5 +1,8 @@
 version: 2.1
 description: General purpose continuous integration configuration
+orbs:
+  circleci-cli: circleci/circleci-cli@0.1.1
+  orbs: circleci/orb-tools@2.0.2
 executors:
   node:
     docker:
@@ -118,6 +121,12 @@ jobs:
           command: npm run lint-report:yaml
       - put-test-results:
           path: ./linting-results
+  lint-circleci-orb:
+    executor: circleci-cli/default
+    steps:
+      - get-workspace
+      - orbs/validate:
+          orb-path: source/index.yml
   create-release-pr:
     executor: node
     parameters:
