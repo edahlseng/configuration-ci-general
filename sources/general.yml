@@ -44,16 +44,6 @@ commands:
     steps:
       - attach_workspace:
           at: . # relative from working_directory
-  halt-if-release-commit:
-    description: Check commit message for chore(release), halting job if true
-    steps:
-      - run:
-          name: Ensuring commit is a release commit
-          command: |
-            if [[ $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
-              echo "Release commit, halting"
-              circleci-agent step halt
-            fi
   halt-if-not-release-commit:
     description: Check commit message for chore(release), halting job if false
     steps:
@@ -64,19 +54,16 @@ commands:
               echo "Release commit, halting"
               circleci-agent step halt
             fi
-  tag:
-    description: Tag current release commit and push the new tag
+  halt-if-release-commit:
+    description: Check commit message for chore(release), halting job if true
     steps:
       - run:
-          name: Creating Git tag
+          name: Ensuring commit is a release commit
           command: |
-            versionTag=$(echo $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
-
-            echo "Tagging commit"
-            git tag "$versionTag"
-      - run:
-          name: Pushing tag to Git remote
-          command: git push --tags
+            if [[ $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
+              echo "Release commit, halting"
+              circleci-agent step halt
+            fi
   setup-git-user:
     description: Configures Git so that actions are performed on behalf of the specified user
     parameters:
@@ -102,6 +89,19 @@ commands:
           command: |
             git config --global user.email "<< parameters.git-user-email >>"
             git config --global user.name "<< parameters.git-user-name >>"
+  tag:
+    description: Tag current release commit and push the new tag
+    steps:
+      - run:
+          name: Creating Git tag
+          command: |
+            versionTag=$(echo $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
+
+            echo "Tagging commit"
+            git tag "$versionTag"
+      - run:
+          name: Pushing tag to Git remote
+          command: git push --tags
 
 jobs:
   install-dependencies-npm:
@@ -156,21 +156,6 @@ jobs:
       - get-workspace
       - orbs/validate:
           orb-path: source/index.yml
-  publish-circleci-dev:
-    executor: circleci-cli/default
-    parameters:
-      orb-ref:
-        description: A versionless orb-ref in the form <namespace>/<orb-name>
-        type: string
-      token-variable:
-        description: The env var containing your token. Pass this as a literal string such as `$ORB_PUBLISHING_TOKEN`. Do not paste the actual token into your configuration.
-        type: string
-    steps:
-      - get-workspace
-      - orbs/publish:
-          orb-path: sources/index.yml
-          orb-ref: << parameters.orb-ref >>@dev:$(echo "${CIRCLE_BRANCH//[^a-zA-Z0-9-]/-}" | tr '[:upper:]' '[:lower:]')
-          token-variable: << parameters.token-variable >>
   create-release-pr:
     executor: node
     parameters:
@@ -215,26 +200,21 @@ jobs:
                   "body": "This pull request creates a new release. It will be updated whenever a new commit is pushed to master."
                 }
             EOF
-  tag-and-publish-npm:
-    executor: node
+  publish-circleci-dev:
+    executor: circleci-cli/default
     parameters:
-      git-ssh-fingerprint:
+      orb-ref:
+        description: A versionless orb-ref in the form <namespace>/<orb-name>
         type: string
-      git-user-email:
-        type: string
-      git-user-name:
+      token-variable:
+        description: The env var containing your token. Pass this as a literal string such as `$ORB_PUBLISHING_TOKEN`. Do not paste the actual token into your configuration.
         type: string
     steps:
       - get-workspace
-      - halt-if-not-release-commit
-      - setup-git-user:
-          git-ssh-fingerprint: << parameters.git-ssh-fingerprint >>
-          git-user-email: << parameters.git-user-email >>
-          git-user-name: << parameters.git-user-name >>
-      - tag
-      - run: |
-          echo "Publishing to NPM"
-          npm publish
+      - orbs/publish:
+          orb-path: sources/index.yml
+          orb-ref: << parameters.orb-ref >>@dev:$(echo "${CIRCLE_BRANCH//[^a-zA-Z0-9-]/-}" | tr '[:upper:]' '[:lower:]')
+          token-variable: << parameters.token-variable >>
   tag-and-publish-circleci:
     executor: circleci-cli/default
     parameters:
@@ -263,3 +243,23 @@ jobs:
           orb-ref: >-
             << parameters.orb-ref >>@$(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/\1/')
           token-variable: << parameters.token-variable >>
+  tag-and-publish-npm:
+    executor: node
+    parameters:
+      git-ssh-fingerprint:
+        type: string
+      git-user-email:
+        type: string
+      git-user-name:
+        type: string
+    steps:
+      - get-workspace
+      - halt-if-not-release-commit
+      - setup-git-user:
+          git-ssh-fingerprint: << parameters.git-ssh-fingerprint >>
+          git-user-email: << parameters.git-user-email >>
+          git-user-name: << parameters.git-user-name >>
+      - tag
+      - run: |
+          echo "Publishing to NPM"
+          npm publish
