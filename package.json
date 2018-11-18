@@ -1,8 +1,8 @@
 {
-  "name": "ci-configuration",
+  "name": "ci-configuration-general",
   "private": true,
   "version": "1.0.2",
-  "description": "Continuous Integration Configuration ------------------------------------",
+  "description": "General Continuous Integration Configuration ------------------------------------",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/edahlseng/ci-configuration.git"
+    "url": "git+https://github.com/edahlseng/ci-configuration-general.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/edahlseng/ci-configuration/issues"
+    "url": "https://github.com/edahlseng/ci-configuration-general/issues"
   },
-  "homepage": "https://github.com/edahlseng/ci-configuration#readme",
+  "homepage": "https://github.com/edahlseng/ci-configuration-general#readme",
   "dependencies": {},
   "devDependencies": {
     "@eric.dahlseng/linter-configuration": "^0.3.0",
