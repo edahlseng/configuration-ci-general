@@ -186,20 +186,36 @@ jobs:
           name: Force-pushing branch
           command: git push origin ci/release --force
       - run:
-          name: Creating pull request
+          name: Creating or updating pull request
           command: |
-            curl -X POST \
+            versionTag=$(cat package.json | grep -E '^\s*"version":\s*"[0-9]+\.[0-9]+\.[0-9]+",?\s*$' | sed -r 's/.*([0-9]+\.[0-9]+\.[0-9]+).*/v\1/')
+
+            curl -w "%{http_code}\n" -X POST \
               -H 'Accept: application/vnd.github.v3+json' \
               -H "Authorization: token << parameters.github-access-token >>" \
               https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls \
-              --data @- \<<-EOF
+              --data @- \<<-EOF | tee curl.log
                 {
-                  "title": "New Release",
+                  "title": "New Release: ${versionTag}",
                   "head": "ci/release",
                   "base": "master",
                   "body": "This pull request creates a new release. It will be updated whenever a new commit is pushed to master."
                 }
             EOF
+
+            releasePullRequestNumber=$(curl -X GET -H 'Accept: application/vnd.github.v3+json' "https://api.github.com/repos/edahlseng/ci-configuration-general/pulls?base=master&head=ci%2Frelease" | grep -E '^\s*"number":\s*[0-9]+,?\s*$' | sed -E 's/.*[^[0-9]([0-9]+)[^0-9].*/\1/')
+
+            if [[ $(cat curl.log | tail -n 1) == 422 ]]; then
+              curl -X PATCH \
+                -H 'Accept: application/vnd.github.v3+json' \
+                -H "Authorization: token << parameters.github-access-token >>" \
+                https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls/$releasePullRequestNumber \
+                --data @- \<<-EOF
+                  {
+                    "title": "New Release: ${versionTag}"
+                  }
+            EOF
+            fi
   publish-circleci-dev:
     executor: circleci-cli/default
     parameters:
