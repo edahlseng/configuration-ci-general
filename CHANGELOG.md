@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.3.0"></a>
+# [1.3.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.2.0...v1.3.0) (2018-11-18)
+
+
+### Bug Fixes
+
+* Add version number tag to release pull request ([5574dc2](https://github.com/edahlseng/ci-configuration-general/commit/5574dc2))
+
+
+### Features
+
+* Add lint-circleci-orb job ([973927d](https://github.com/edahlseng/ci-configuration-general/commit/973927d))
+* Add publish-circleci-dev job ([24d9774](https://github.com/edahlseng/ci-configuration-general/commit/24d9774))
+* Add tag-and-publish-circleci job ([0448b35](https://github.com/edahlseng/ci-configuration-general/commit/0448b35))
+* Parameterize Git user and credentials ([1e1ddc4](https://github.com/edahlseng/ci-configuration-general/commit/1e1ddc4))
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.1.2...v1.2.0) (2018-11-18)
 
