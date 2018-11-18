@@ -127,6 +127,21 @@ jobs:
       - get-workspace
       - orbs/validate:
           orb-path: source/index.yml
+  publish-circleci-dev:
+    executor: circleci-cli/default
+    parameters:
+      orb-ref:
+        description: A versionless orb-ref in the form <namespace>/<orb-name>
+        type: string
+      token-variable:
+        description: The env var containing your token. Pass this as a literal string such as `$ORB_PUBLISHING_TOKEN`. Do not paste the actual token into your configuration.
+        type: string
+    steps:
+      - get-workspace
+      - orbs/publish:
+          orb-path: sources/index.yml
+          orb-ref: << parameters.orb-ref >>@dev:$(echo "${CIRCLE_BRANCH//[^a-zA-Z0-9-]/-}" | tr '[:upper:]' '[:lower:]')
+          token-variable: << parameters.token-variable >>
   create-release-pr:
     executor: node
     parameters:
