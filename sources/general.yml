@@ -32,7 +32,7 @@ commands:
           path: << parameters.path >>
       - store_artifacts:
           path: << parameters.path >>
-  get:
+  get-workspace:
     description: Load all files from workspace
     steps:
       - attach_workspace:
@@ -75,28 +75,28 @@ jobs:
   lint-commit:
     executor: node
     steps:
-      - get
+      - get-workspace
       - run: npm run lint-report:commit -- --from origin/master
       - put-test-results:
           path: ./linting-results
   lint-js:
     executor: node
     steps:
-      - get
+      - get-workspace
       - run: npm run lint-report:js
       - put-test-results:
           path: ./linting-results
   lint-json:
     executor: node
     steps:
-      - get
+      - get-workspace
       - run: npm run lint-report:json
       - put-test-results:
           path: ./linting-results
   lint-yaml:
     executor: node
     steps:
-      - get
+      - get-workspace
       - run: npm run lint-report:yaml
       - put-test-results:
           path: ./linting-results
@@ -106,7 +106,7 @@ jobs:
       git-ssh-fingerprint:
         type: string
     steps:
-      - get
+      - get-workspace
       - halt-if-release-commit
       - run:
           name: Setup Git
@@ -151,7 +151,7 @@ jobs:
       git-ssh-fingerprint:
         type: string
     steps:
-      - get
+      - get-workspace
       - halt-if-not-release-commit
       - run:
           name: Setup Git
