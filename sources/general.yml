@@ -1,5 +1,5 @@
 version: "2.1"
-description: General continuous integration configuration
+description: General purpose continuous integration configuration
 executors:
   node:
     docker:
