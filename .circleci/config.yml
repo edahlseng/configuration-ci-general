@@ -3,13 +3,13 @@ version: 2.1
 orbs:
   circleci-cli: circleci/circleci-cli@0.1.1
   orbs: circleci/orb-tools@2.0.2
-  general: edahlseng/general@1.1.1
+  general: edahlseng/general@1.2.0
 
 jobs:
   lint-circleci-orb:
     executor: circleci-cli/default
     steps:
-      - general/get
+      - general/get-workspace
       - run: |
           for orb in sources/*; do
             echo "Validating $orb"
@@ -18,7 +18,7 @@ jobs:
   publish-circleci-dev:
     executor: circleci-cli/default
     steps:
-      - general/get
+      - general/get-workspace
       - orbs/publish:
           orb-path: sources/general.yml
           orb-ref: edahlseng/general@dev:$(echo "${CIRCLE_BRANCH//[^a-zA-Z0-9-]/-}" | tr '[:upper:]' '[:lower:]')
@@ -29,7 +29,7 @@ jobs:
       git-ssh-fingerprint:
         type: string
     steps:
-      - general/get
+      - general/get-workspace
       - general/halt-if-not-release-commit
       - add_ssh_keys:
           fingerprints:
@@ -79,7 +79,7 @@ workflows:
               ignore: master
       - general/create-release-pr:
           context: Release Bot
-          ssh-fingerprint: da:75:0b:32:cf:ea:fe:8f:c6:0e:6a:82:6c:fb:c4:78
+          git-ssh-fingerprint: da:75:0b:32:cf:ea:fe:8f:c6:0e:6a:82:6c:fb:c4:78
           requires:
             - general/lint-commit
             - general/lint-json
