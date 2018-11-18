@@ -40,28 +40,36 @@ commands:
   halt-if-release-commit:
     description: Check commit message for chore(release), halting job if true
     steps:
-      - run: |
-          if [[ $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
-            echo "Release commit, halting"
-            circleci-agent step halt
-          fi
+      - run:
+          name: Ensuring commit is a release commit
+          command: |
+            if [[ $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
+              echo "Release commit, halting"
+              circleci-agent step halt
+            fi
   halt-if-not-release-commit:
     description: Check commit message for chore(release), halting job if false
     steps:
-      - run: |
-          if [[ ! $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
-            echo "Release commit, halting"
-            circleci-agent step halt
-          fi
+      - run:
+          name: Ensuring commit is not a release commit
+          command: |
+            if [[ ! $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
+              echo "Release commit, halting"
+              circleci-agent step halt
+            fi
   tag:
     description: Tag current release commit and push the new tag
     steps:
-      - run: |
-          versionTag=$(echo $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
+      - run:
+          name: Creating Git tag
+          command: |
+            versionTag=$(echo $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
 
-          echo "Tagging commit"
-          git tag "$versionTag"
-          git push --tags
+            echo "Tagging commit"
+            git tag "$versionTag"
+      - run:
+          name: Pushing tag to Git remote
+          command: git push --tags
 
 jobs:
   install-dependencies-npm:
@@ -69,35 +77,45 @@ jobs:
     steps:
       - checkout
       - put-all
-      - run: npm ci || npm install
+      - run:
+          name: Installing NPM dependencies
+          command: npm ci || npm install
       - put-directory:
           path: node_modules
   lint-commit:
     executor: node
     steps:
       - get-workspace
-      - run: npm run lint-report:commit -- --from origin/master
+      - run:
+          name: Linting commit messages
+          command: npm run lint-report:commit -- --from origin/master
       - put-test-results:
           path: ./linting-results
   lint-js:
     executor: node
     steps:
       - get-workspace
-      - run: npm run lint-report:js
+      - run:
+          name: Linting JavaScript files
+          command: npm run lint-report:js
       - put-test-results:
           path: ./linting-results
   lint-json:
     executor: node
     steps:
       - get-workspace
-      - run: npm run lint-report:json
+      - run:
+          name: Linting JSON files
+          command: npm run lint-report:json
       - put-test-results:
           path: ./linting-results
   lint-yaml:
     executor: node
     steps:
       - get-workspace
-      - run: npm run lint-report:yaml
+      - run:
+          name: Linting YAML files
+          command: npm run lint-report:yaml
       - put-test-results:
           path: ./linting-results
   create-release-pr:
@@ -109,7 +127,7 @@ jobs:
       - get-workspace
       - halt-if-release-commit
       - run:
-          name: Setup Git
+          name: Setting up Git user
           command: |
             mkdir -p ~/.ssh
 
@@ -121,30 +139,32 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - << parameters.git-ssh-fingerprint >>
-      - run: |
-          echo "Creating branch"
-          git checkout -b ci/release
-          git reset --hard origin/master
-
-          echo "Creating release"
-          npm run release
-
-          echo "Pushing branch"
-          git push origin ci/release --force
-
-          echo "Attempting to create pull request"
-          curl -X POST \
-            -H 'Accept: application/vnd.github.v3+json' \
-            -H "Authorization: token $RELEASE_BOT_GITHUB_TOKEN" \
-            https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls \
-            --data @- \<<-EOF
-              {
-                "title": "New Release",
-                "head": "ci/release",
-                "base": "master",
-                "body": "This pull request creates a new release. It will be updated whenever a new commit is pushed to master."
-              }
-          EOF
+      - run:
+          name: Creating release branch
+          command: |
+            git checkout -b ci/release
+            git reset --hard origin/master
+      - run:
+          name: Creating release
+          command: npm run release
+      - run:
+          name: Force-pushing branch
+          command: git push origin ci/release --force
+      - run:
+          name: Creating pull request
+          command: |
+            curl -X POST \
+              -H 'Accept: application/vnd.github.v3+json' \
+              -H "Authorization: token $RELEASE_BOT_GITHUB_TOKEN" \
+              https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls \
+              --data @- \<<-EOF
+                {
+                  "title": "New Release",
+                  "head": "ci/release",
+                  "base": "master",
+                  "body": "This pull request creates a new release. It will be updated whenever a new commit is pushed to master."
+                }
+            EOF
   tag-and-publish-npm:
     executor: node
     parameters:
