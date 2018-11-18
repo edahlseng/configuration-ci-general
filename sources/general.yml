@@ -155,7 +155,7 @@ jobs:
     steps:
       - get-workspace
       - orbs/validate:
-          orb-path: source/index.yml
+          orb-path: sources/index.yml
   create-release-pr:
     executor: node
     parameters:
