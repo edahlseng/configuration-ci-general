@@ -3,7 +3,7 @@ version: 2.1
 orbs:
   circleci-cli: circleci/circleci-cli@0.1.1
   orbs: circleci/orb-tools@2.0.2
-  general: edahlseng/general@1.1.0
+  general: edahlseng/general@1.1.1
 
 jobs:
   lint-circleci-orb:
@@ -25,16 +25,15 @@ jobs:
           token-variable: $ORB_PUBLISHING_TOKEN
   tag-and-publish-circleci:
     executor: circleci-cli/default
+    parameters:
+      git-ssh-fingerprint:
+        type: string
     steps:
       - general/get
-      - run: |
-          if [[ ! $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
-            echo "Not a release commit, exiting"
-            circleci-agent step halt
-          fi
+      - general/halt-if-not-release-commit
       - add_ssh_keys:
           fingerprints:
-            - da:75:0b:32:cf:ea:fe:8f:c6:0e:6a:82:6c:fb:c4:78
+            - << parameters.git-ssh-fingerprint >>
       - run:
           name: Setup Git
           command: |
@@ -45,12 +44,7 @@ jobs:
 
             git config --global user.email "edahlseng@users.noreply.github.com"
             git config --global user.name "Release Bot"
-      - run: |
-          versionTag=$(echo $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
-
-          echo "Tagging commit"
-          git tag "$versionTag"
-          git push --tags
+      - general/tag
       - orbs/publish:
           orb-path: sources/general.yml
           orb-ref: |
@@ -96,6 +90,7 @@ workflows:
               only: master
       - tag-and-publish-circleci:
           context: Orb Publishing
+          git-ssh-fingerprint: da:75:0b:32:cf:ea:fe:8f:c6:0e:6a:82:6c:fb:c4:78
           requires:
             - general/lint-commit
             - general/lint-json
