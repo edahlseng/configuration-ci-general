@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.2"></a>
+## [1.1.2](https://github.com/edahlseng/ci-configuration-general/compare/v1.1.1...v1.1.2) (2018-11-18)
+
+
+### Bug Fixes
+
+* Add description to tag command ([91e7e6a](https://github.com/edahlseng/ci-configuration-general/commit/91e7e6a))
+* Rename ssh-fingerprint parameters to git-ssh-fingerprint ([02b2b92](https://github.com/edahlseng/ci-configuration-general/commit/02b2b92))
+
+
+
 <a name="1.1.1"></a>
 ## [1.1.1](https://github.com/edahlseng/ci-configuration-general/compare/v1.1.0...v1.1.1) (2018-11-18)
 
