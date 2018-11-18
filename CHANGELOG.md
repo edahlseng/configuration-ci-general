@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.1.2...v1.2.0) (2018-11-18)
+
+
+### Bug Fixes
+
+* Add names to steps ([cf90df8](https://github.com/edahlseng/ci-configuration-general/commit/cf90df8))
+
+
+### Features
+
+* Rename get command to get-workspace ([0edb986](https://github.com/edahlseng/ci-configuration-general/commit/0edb986))
+
+
+
 <a name="1.1.2"></a>
 ## [1.1.2](https://github.com/edahlseng/ci-configuration-general/compare/v1.1.1...v1.1.2) (2018-11-18)
 
