@@ -3,13 +3,13 @@ version: 2.1
 orbs:
   circleci-cli: circleci/circleci-cli@0.1.1
   orbs: circleci/orb-tools@2.0.2
-  edahlseng: edahlseng/general@1.0.1
+  general: edahlseng/general@1.1.0
 
 jobs:
-  lint-circleci:
+  lint-circleci-orb:
     executor: circleci-cli/default
     steps:
-      - edahlseng/get
+      - general/get
       - run: |
           for orb in sources/*; do
             echo "Validating $orb"
@@ -18,20 +18,15 @@ jobs:
   publish-circleci-dev:
     executor: circleci-cli/default
     steps:
-      - edahlseng/get
+      - general/get
       - orbs/publish:
           orb-path: sources/general.yml
           orb-ref: edahlseng/general@dev:$(echo "${CIRCLE_BRANCH//[^a-zA-Z0-9-]/-}" | tr '[:upper:]' '[:lower:]')
           token-variable: $ORB_PUBLISHING_TOKEN
-  release-pr:
-    executor: edahlseng/node
-    steps:
-      - edahlseng/release-pr:
-          ssh-fingerprint: da:75:0b:32:cf:ea:fe:8f:c6:0e:6a:82:6c:fb:c4:78
   tag-and-publish-circleci:
     executor: circleci-cli/default
     steps:
-      - edahlseng/get
+      - general/get
       - run: |
           if [[ ! $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ "chore\(release\):" ]]; then
             echo "Not a release commit, exiting"
@@ -65,46 +60,47 @@ jobs:
 workflows:
   main:
     jobs:
-      - edahlseng/install-dependencies-npm
-      - edahlseng/lint-commit:
+      - general/install-dependencies-npm
+      - general/lint-commit:
           requires:
-            - edahlseng/install-dependencies-npm
-      - edahlseng/lint-json:
+            - general/install-dependencies-npm
+      - general/lint-json:
           requires:
-            - edahlseng/install-dependencies-npm
-      - edahlseng/lint-yaml:
+            - general/install-dependencies-npm
+      - general/lint-yaml:
           requires:
-            - edahlseng/install-dependencies-npm
-      - lint-circleci:
+            - general/install-dependencies-npm
+      - lint-circleci-orb:
           requires:
-            - edahlseng/install-dependencies-npm
+            - general/install-dependencies-npm
       - publish-circleci-dev:
           context: Orb Publishing
           requires:
-            - edahlseng/lint-commit
-            - edahlseng/lint-json
-            - edahlseng/lint-yaml
-            - lint-circleci
+            - general/lint-commit
+            - general/lint-json
+            - general/lint-yaml
+            - lint-circleci-orb
           filters:
             branches:
               ignore: master
-      - release-pr:
+      - general/create-release-pr:
           context: Release Bot
+          ssh-fingerprint: da:75:0b:32:cf:ea:fe:8f:c6:0e:6a:82:6c:fb:c4:78
           requires:
-            - edahlseng/lint-commit
-            - edahlseng/lint-json
-            - edahlseng/lint-yaml
-            - lint-circleci
+            - general/lint-commit
+            - general/lint-json
+            - general/lint-yaml
+            - lint-circleci-orb
           filters:
             branches:
               only: master
       - tag-and-publish-circleci:
           context: Orb Publishing
           requires:
-            - edahlseng/lint-commit
-            - edahlseng/lint-json
-            - edahlseng/lint-yaml
-            - lint-circleci
+            - general/lint-commit
+            - general/lint-json
+            - general/lint-yaml
+            - lint-circleci-orb
           filters:
             branches:
               only: master
