@@ -50,6 +50,7 @@ The best release process is one that is automated, removing the barrier to relea
 * Jobs
   * create-release-pr
   * publish-circleci-dev
+  * tag
   * tag-and-publish-circleci
   * tag-and-publish-npm
 
