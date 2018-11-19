@@ -10,6 +10,9 @@ executors:
   node:
     docker:
       - image: node:10.13.0-jessie
+  buildpack-deps:
+    docker:
+      - image: buildpack-deps:jessie
 
 commands:
   put-all:
@@ -231,6 +234,23 @@ jobs:
           orb-path: sources/index.yml
           orb-ref: << parameters.orb-ref >>@dev:$(echo "${CIRCLE_BRANCH//[^a-zA-Z0-9-]/-}" | tr '[:upper:]' '[:lower:]')
           token-variable: << parameters.token-variable >>
+  tag:
+    executor: buildpack-deps
+    parameters:
+      git-ssh-fingerprint:
+        type: string
+      git-user-email:
+        type: string
+      git-user-name:
+        type: string
+    steps:
+      - get-workspace
+      - halt-if-not-release-commit
+      - setup-git-user:
+          git-ssh-fingerprint: << parameters.git-ssh-fingerprint >>
+          git-user-email: << parameters.git-user-email >>
+          git-user-name: << parameters.git-user-name >>
+      - tag
   tag-and-publish-circleci:
     executor: circleci-cli/default
     parameters:
