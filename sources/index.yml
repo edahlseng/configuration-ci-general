@@ -159,6 +159,18 @@ jobs:
       - get-workspace
       - orbs/validate:
           orb-path: sources/index.yml
+  test:
+    executor: circleci-cli/default
+    steps:
+      - get-workspace
+      - run:
+          name: Running tests
+          command: npm run test-report
+      - put-test-results:
+          path: ./test-results
+      - store_artifacts:
+          path: ./coverage
+          destination: coverage
   create-release-pr:
     executor: node
     parameters:
