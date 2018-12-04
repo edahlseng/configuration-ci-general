@@ -13,10 +13,16 @@ executors:
   buildpack-deps:
     docker:
       - image: buildpack-deps:jessie
+  terraform:
+    parameters:
+      tag:
+        type: string
+    docker:
+      - image: hashicorp/terraform:<< parameters.tag >>
 
 commands:
   put-all:
-    description: Save all files to the workspaces
+    description: Save all files to the workspace
     steps:
       - persist_to_workspace:
           root: . # relative to working_directory
@@ -24,6 +30,16 @@ commands:
             - .
   put-directory:
     description: Save all files to the workspaces
+    parameters:
+      path:
+        type: string
+    steps:
+      - persist_to_workspace:
+          root: . # relative to working_directory
+          paths: # relative to root
+            - << parameters.path >>
+  put-path:
+    description: Save path to the workspace
     parameters:
       path:
         type: string
@@ -117,6 +133,12 @@ jobs:
           command: npm ci || npm install
       - put-directory:
           path: node_modules
+  lint-circleci-orb:
+    executor: circleci-cli/default
+    steps:
+      - get-workspace
+      - orbs/validate:
+          orb-path: sources/index.yml
   lint-commit:
     executor: node
     steps:
@@ -144,6 +166,19 @@ jobs:
           command: npm run lint-report:json
       - put-test-results:
           path: ./linting-results
+  lint-terraform:
+    parameters:
+      terraform-image-tag:
+        type: string
+        default: light
+    executor:
+      name: terraform
+      tag: << parameters.terraform-image-tag >>
+    steps:
+      - get-workspace
+      - run:
+          name: Linting Terraform files
+          command: terraform fmt -check=true
   lint-yaml:
     executor: node
     steps:
@@ -153,12 +188,6 @@ jobs:
           command: npm run lint-report:yaml
       - put-test-results:
           path: ./linting-results
-  lint-circleci-orb:
-    executor: circleci-cli/default
-    steps:
-      - get-workspace
-      - orbs/validate:
-          orb-path: sources/index.yml
   test:
     executor: circleci-cli/default
     steps:
@@ -311,3 +340,69 @@ jobs:
       - run: |
           echo "Publishing to NPM"
           npm publish
+  terraform-plan:
+    parameters:
+      directory:
+        type: string
+      terraform-image-tag:
+        type: string
+      setup-steps:
+        type: steps
+        default: []
+    executor:
+      name: terraform
+      tag: << parameters.terraform-image-tag >>
+    steps:
+      - get-workspace
+      - steps: << parameters.setup-steps >>
+      - run:
+          name: Initializing Terraform
+          command: cd << parameters.directory >> && terraform init
+      - run:
+          name: Creating Terraform Plan
+          command: cd << parameters.directory >> && terraform plan -out=terraform.plan
+      - put-path:
+          path: << parameters.directory >>/terraform.plan
+  terraform-apply:
+    parameters:
+      directory:
+        type: string
+      terraform-image-tag:
+        type: string
+      setup-steps:
+        type: steps
+        default: []
+    executor:
+      name: terraform
+      tag: << parameters.terraform-image-tag >>
+    steps:
+      - get-workspace
+      - steps: << parameters.setup-steps >>
+      - run:
+          name: Initializing Terraform
+          command: cd << parameters.directory >> && terraform init
+      - run:
+          name: Applying Terraform Plan
+          command: cd << parameters.directory >> && terraform apply "terraform.plan"
+  validate-terraform:
+    parameters:
+      directories:
+        type: string
+      terraform-image-tag:
+        type: string
+    executor:
+      name: terraform
+      tag: << parameters.terraform-image-tag >>
+    steps:
+      - get-workspace
+      - run:
+          name: Validiting Terraform configuration
+          command: |
+            directories=(<< parameters.directories >>)
+
+            for directory in $directories; do
+              cd $directory
+              terraform init
+              terraform validate
+              cd -
+            done
