@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.5.0"></a>
+# [1.5.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.4.0...v1.5.0) (2018-12-04)
+
+
+### Features
+
+* Add Terraform-related jobs and executor ([bd4d790](https://github.com/edahlseng/ci-configuration-general/commit/bd4d790))
+
+
+
 <a name="1.4.0"></a>
 # [1.4.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.3.2...v1.4.0) (2018-11-19)
 
