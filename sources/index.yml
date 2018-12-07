@@ -9,7 +9,8 @@ orbs:
 executors:
   node:
     docker:
-      - image: node:10.13.0-jessie
+      - image: circleci/node:10.13.0-jessie
+        user: circleci
   buildpack-deps:
     docker:
       - image: buildpack-deps:jessie
