@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.6.0"></a>
+# [1.6.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.5.0...v1.6.0) (2018-12-07)
+
+
+### Features
+
+* Add setup-steps parameter to install-dependencies-npm job ([b4ca5ab](https://github.com/edahlseng/ci-configuration-general/commit/b4ca5ab))
+
+
+
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.4.0...v1.5.0) (2018-12-04)
 
