@@ -124,9 +124,14 @@ commands:
 
 jobs:
   install-dependencies-npm:
+    parameters:
+      setup-steps:
+        type: steps
+        default: []
     executor: node
     steps:
       - checkout
+      - steps: << parameters.setup-steps >>
       - put-all
       - run:
           name: Installing NPM dependencies
