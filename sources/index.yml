@@ -19,7 +19,8 @@ executors:
       tag:
         type: string
     docker:
-      - image: hashicorp/terraform:<< parameters.tag >>
+      - image: edahlseng/circleci-terraform:<< parameters.tag >>-jessie
+        user: circleci
 
 commands:
   put-all:
@@ -176,7 +177,6 @@ jobs:
     parameters:
       terraform-image-tag:
         type: string
-        default: light
     executor:
       name: terraform
       tag: << parameters.terraform-image-tag >>
