@@ -396,11 +396,15 @@ jobs:
         type: string
       terraform-image-tag:
         type: string
+      setup-steps:
+        type: steps
+        default: []
     executor:
       name: terraform
       tag: << parameters.terraform-image-tag >>
     steps:
       - get-workspace
+      - steps: << parameters.setup-steps >>
       - run:
           name: Validiting Terraform configuration
           command: |
