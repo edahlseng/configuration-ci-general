@@ -378,6 +378,9 @@ jobs:
       setup-steps:
         type: steps
         default: []
+      ignore-missing-plan:
+        type: boolean
+        default: false
     executor:
       name: terraform
       tag: << parameters.terraform-image-tag >>
@@ -389,7 +392,19 @@ jobs:
           command: cd << parameters.directory >> && terraform init
       - run:
           name: Applying Terraform Plan
-          command: cd << parameters.directory >> && terraform apply "terraform.plan"
+          command: |
+            cd << parameters.directory >>
+
+            <<# parameters.ignore-missing-plan >>
+              if [[ -e "terraform.plan" ]]; then
+                terraform apply "terraform.plan"
+              else
+                terraform apply -auto-approve
+              fi
+              exit
+            <</ parameters.ignore-missing-plan >>
+
+            terraform apply "terraform.plan"
   validate-terraform:
     parameters:
       directories:
