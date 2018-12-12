@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.6.1"></a>
+## [1.6.1](https://github.com/edahlseng/ci-configuration-general/compare/v1.6.0...v1.6.1) (2018-12-12)
+
+
+### Bug Fixes
+
+* Add option for terraform-apply to ignore a missing plan ([3fd2c23](https://github.com/edahlseng/ci-configuration-general/commit/3fd2c23))
+* Add setup-steps to validate-terraform job ([ea43d7f](https://github.com/edahlseng/ci-configuration-general/commit/ea43d7f))
+* Set Terraform executor to use a CircleCI-compatible Docker image ([84e4680](https://github.com/edahlseng/ci-configuration-general/commit/84e4680))
+* Set user on Node Docker executor ([9f51b61](https://github.com/edahlseng/ci-configuration-general/commit/9f51b61))
+
+
+
 <a name="1.6.0"></a>
 # [1.6.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.5.0...v1.6.0) (2018-12-07)
 
