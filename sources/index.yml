@@ -124,6 +124,8 @@ commands:
       - run:
           name: Pushing tag to Git remote
           command: git push --tags
+      - put-directory:
+          path: .git
 
 jobs:
   install-dependencies-npm:
