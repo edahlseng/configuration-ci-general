@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.7.0"></a>
+# [1.7.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.6.1...v1.7.0) (2019-01-07)
+
+
+### Features
+
+* Add create-github-release job ([8b2f9ba](https://github.com/edahlseng/ci-configuration-general/commit/8b2f9ba))
+
+
+
 <a name="1.6.1"></a>
 ## [1.6.1](https://github.com/edahlseng/ci-configuration-general/compare/v1.6.0...v1.6.1) (2018-12-12)
 
