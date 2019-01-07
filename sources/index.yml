@@ -13,7 +13,8 @@ executors:
         user: circleci
   buildpack-deps:
     docker:
-      - image: buildpack-deps:jessie
+      - image: circleci/buildpack-deps:jessie
+        user: circleci
   terraform:
     parameters:
       tag:
@@ -206,6 +207,44 @@ jobs:
       - store_artifacts:
           path: ./coverage
           destination: coverage
+  create-github-release:
+    executor: buildpack-deps
+    parameters:
+      github-access-token:
+        type: string
+      artifact-paths:
+        type: string
+    steps:
+      - get-workspace
+      - halt-if-not-release-commit
+      - run:
+          name: Creating release
+          command: |
+            versionTag=$(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
+
+            curl -X POST \
+              -H 'Accept: application/vnd.github.v3+json' \
+              -H "Authorization: token << parameters.github-access-token >>" \
+              "https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases" \
+              --data @- \<<-EOF | tee curl.log
+                {
+                  "tag_name": "${versionTag}",
+                  "name": "Release Version ${versionTag:1}"
+                }
+            EOF
+
+            <<# parameters.artifact-paths >>
+              artifactPaths=(<< parameters.artifact-paths>>)
+              artifactUploadUrl=$(cat curl.log | jq -r .upload_url | sed -r 's/^(.*)\{\?name,label\}$/\1/')
+
+              for artifactPath in $artifactPaths; do
+                curl -X POST \
+                  -H "Authorization: token << parameters.github-access-token >>" \
+                  -H "Content-Type: $(file -b --mime-type "${artifactPath}")" \
+                  "${artifactUploadUrl}?name=$(basename "${artifactPath}")" \
+                  --data-binary "@${artifactPath}"
+              done
+            <</ parameters.artifact-paths >>
   create-release-pr:
     executor: node
     parameters:
