@@ -239,7 +239,7 @@ jobs:
               artifactPaths=(<< parameters.artifact-paths>>)
               artifactUploadUrl=$(cat curl.log | jq -r .upload_url | sed -r 's/^(.*)\{\?name,label\}$/\1/')
 
-              for artifactPath in $artifactPaths; do
+              for artifactPath in "${artifactPaths[@]}"; do
                 curl -X POST \
                   -H "Authorization: token << parameters.github-access-token >>" \
                   -H "Content-Type: $(file -b --mime-type "${artifactPath}")" \
@@ -466,7 +466,7 @@ jobs:
           command: |
             directories=(<< parameters.directories >>)
 
-            for directory in $directories; do
+            for directory in "${directories[@]}"; do
               cd $directory
               terraform init
               terraform validate
