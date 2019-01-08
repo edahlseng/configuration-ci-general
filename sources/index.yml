@@ -239,6 +239,8 @@ jobs:
               artifactPaths=(<< parameters.artifact-paths>>)
               artifactUploadUrl=$(cat curl.log | jq -r .upload_url | sed -r 's/^(.*)\{\?name,label\}$/\1/')
 
+              echo "Uploading ${#artifactPaths} artifacts: ${artifactPaths[@]}"
+
               for artifactPath in "${artifactPaths[@]}"; do
                 curl -X POST \
                   -H "Authorization: token << parameters.github-access-token >>" \
