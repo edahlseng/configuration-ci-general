@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.8.0"></a>
+# [1.8.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.7.2...v1.8.0) (2019-01-09)
+
+
+### Bug Fixes
+
+* Remove redundant word from GitHub Release name ([791b7a9](https://github.com/edahlseng/ci-configuration-general/commit/791b7a9))
+
+
+### Features
+
+* Add lint-css job ([9b0328d](https://github.com/edahlseng/ci-configuration-general/commit/9b0328d))
+* Add validate-js job ([a84d970](https://github.com/edahlseng/ci-configuration-general/commit/a84d970))
+
+
+
 <a name="1.7.2"></a>
 ## [1.7.2](https://github.com/edahlseng/ci-configuration-general/compare/v1.7.1...v1.7.2) (2019-01-08)
 
