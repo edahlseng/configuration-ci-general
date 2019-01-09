@@ -457,6 +457,13 @@ jobs:
             <</ parameters.ignore-missing-plan >>
 
             terraform apply "terraform.plan"
+  validate-js:
+    executor: node
+    steps:
+      - get-workspace
+      - run:
+          name: Validating JavaScript files
+          command: npm run validate:js
   validate-terraform:
     parameters:
       directories:
