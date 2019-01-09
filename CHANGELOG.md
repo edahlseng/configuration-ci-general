@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.8.1"></a>
+## [1.8.1](https://github.com/edahlseng/ci-configuration-general/compare/v1.8.0...v1.8.1) (2019-01-09)
+
+
+### Bug Fixes
+
+* Add default for artifact-paths parameter ([cbf7c0a](https://github.com/edahlseng/ci-configuration-general/commit/cbf7c0a))
+
+
+
 <a name="1.8.0"></a>
 # [1.8.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.7.2...v1.8.0) (2019-01-09)
 
