@@ -225,6 +225,7 @@ jobs:
         type: string
       artifact-paths:
         type: string
+        default: ""
     steps:
       - get-workspace
       - halt-if-not-release-commit
