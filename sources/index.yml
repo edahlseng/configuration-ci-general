@@ -158,6 +158,15 @@ jobs:
           command: npm run lint-report:commit -- --from origin/master
       - put-test-results:
           path: ./linting-results
+  lint-css:
+    executor: node
+    steps:
+      - get-workspace
+      - run:
+          name: Linting CSS
+          command: npm run lint-report:css
+      - put-test-results:
+          path: ./linting-results
   lint-js:
     executor: node
     steps:
