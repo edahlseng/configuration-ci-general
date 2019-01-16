@@ -491,3 +491,25 @@ jobs:
               terraform validate
               cd -
             done
+  build-image:
+    parameters:
+      setup-steps:
+        type: steps
+        default: []
+      dockerfile-path:
+        type: string
+      path:
+        type: string
+      tag:
+        type: string
+    executor: buildpack-deps
+    steps:
+      - get-workspace
+      - steps: << parameters.setup-steps >>
+      - setup_remote_docker
+      - run:
+          name: Building Docker image
+          command: docker build --file << parameters.dockerfile-path >> --tag << parameters.tag >> << parameters.path >>
+      - run:
+          name: Pushing Docker image
+          command: docker push << parameters.tag >>
