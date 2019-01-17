@@ -508,8 +508,8 @@ jobs:
     executor: buildpack-deps
     steps:
       - get-workspace
-      - steps: << parameters.setup-steps >>
       - setup_remote_docker
+      - steps: << parameters.setup-steps >>
       - run:
           name: Building Docker image
           command: docker build --file << parameters.dockerfile-path >> --tag << parameters.tag >> << parameters.build-options >> << parameters.path >>
