@@ -502,6 +502,9 @@ jobs:
         type: string
       tag:
         type: string
+      build-options:
+        type: string
+        default: ""
     executor: buildpack-deps
     steps:
       - get-workspace
@@ -509,7 +512,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Building Docker image
-          command: docker build --file << parameters.dockerfile-path >> --tag << parameters.tag >> << parameters.path >>
+          command: docker build --file << parameters.dockerfile-path >> --tag << parameters.tag >> << parameters.build-options >> << parameters.path >>
       - run:
           name: Pushing Docker image
           command: docker push << parameters.tag >>
