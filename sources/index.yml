@@ -151,6 +151,21 @@ commands:
             echo 'unset AWS_SECRET_ACCESS_KEY' >> $BASH_ENV
             echo 'export AWS_PROFILE="infrastructure"' >> $BASH_ENV
             echo 'export AWS_SDK_LOAD_CONFIG=1' >> $BASH_ENV
+  login-ecr:
+    parameters:
+      aws-region:
+        type: string
+    steps:
+      - run:
+          name: Logging in to ECR
+          command: |
+            if ! which aws > /dev/null; then
+              sudo apt-get update && sudo apt-get install -y python3-pip
+              sudo pip3 install awscli
+            fi
+
+            login="$(aws ecr get-login --no-include-email --region << parameters.aws-region >>)"
+            ${login}
 
 jobs:
   install-dependencies-npm:
