@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.10.0"></a>
+# [1.10.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.9.0...v1.10.0) (2019-01-17)
+
+
+### Bug Fixes
+
+* Move setup_remote_docker before setup-steps for build-image job ([fcfefaf](https://github.com/edahlseng/ci-configuration-general/commit/fcfefaf))
+
+
+### Features
+
+* Add `configure-aws-profile` command ([f2e2bed](https://github.com/edahlseng/ci-configuration-general/commit/f2e2bed))
+* Add `login-ecr` command ([9aacc1f](https://github.com/edahlseng/ci-configuration-general/commit/9aacc1f))
+* Add build-options parameter to build-image job ([f9a8575](https://github.com/edahlseng/ci-configuration-general/commit/f9a8575))
+
+
+
 <a name="1.9.0"></a>
 # [1.9.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.8.1...v1.9.0) (2019-01-16)
 
