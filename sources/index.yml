@@ -514,6 +514,9 @@ jobs:
       setup-steps:
         type: steps
         default: []
+      run-validate-after-init: # Needed in order to get a minimal amount of validation for modules (which are very hard to run terraform validate on without extra configuration)
+        type: boolean
+        default: true
     executor:
       name: terraform
       tag: << parameters.terraform-image-tag >>
@@ -528,7 +531,9 @@ jobs:
             for directory in "${directories[@]}"; do
               cd $directory
               terraform init
-              terraform validate
+              <<# parameters.run-validate-after-init >>
+                terraform validate
+              <</ parameters.run-validate-after-init >>
               cd -
             done
   build-image:
