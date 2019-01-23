@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.12.0"></a>
+# [1.12.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.11.0...v1.12.0) (2019-01-23)
+
+
+### Features
+
+* Add add-github-to-known-hosts command ([aaa7024](https://github.com/edahlseng/ci-configuration-general/commit/aaa7024))
+
+
+
 <a name="1.11.0"></a>
 # [1.11.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.10.0...v1.11.0) (2019-01-18)
 
