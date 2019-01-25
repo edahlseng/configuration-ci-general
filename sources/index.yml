@@ -170,6 +170,30 @@ commands:
 
             login="$(aws ecr get-login --no-include-email --region << parameters.aws-region >>)"
             ${login}
+  select-or-create-workspace:
+    parameters:
+      directory:
+        type: string
+      workspace-name:
+        type: string
+    steps:
+      - run:
+          name: Switching to Terraform workspace << parameters.workspace-name >>
+          command: |
+            function cleanedUpWorkspaces() {
+              sed -E 's/^\*? *([^ ]+) *$/\1/'
+            }
+
+            workspaceName="<< parameters.workspace-name >>"
+
+            cd << parameters.directory >>
+            if [[ -z "$(terraform workspace list | cleanedUpWorkspaces | grep "${workspaceName}")" ]]; then
+              echo "Workspace does not currently exist; creating"
+              terraform workspace new "${workspaceName}"
+            else
+              echo "Workspace already exists; selecting"
+              terraform workspace select "${workspaceName}"
+            fi
 
 jobs:
   install-dependencies-npm:
