@@ -623,3 +623,58 @@ jobs:
       - run:
           name: Pushing Docker image
           command: docker push << parameters.tag >>
+  cleanup-pr-deployments:
+    parameters:
+      directory:
+        type: string
+      terraform-image-tag:
+        type: string
+      github-access-token:
+        type: string
+      setup-steps:
+        type: steps
+        default: []
+    executor:
+      name: terraform
+      tag: << parameters.terraform-image-tag >>
+    steps:
+      - run: get-workspace
+      - steps: << parameters.setup-steps >>
+      - run:
+          name: Finding and destroying outdated PR deployments
+          command: |
+            function openPrWorkspaces() {
+              curl -X GET \
+                -H 'Accept: application/vnd.github.v3+json' \
+                -H "Authorization: token << parameters.github-access-token >>" \
+                "https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls" | jq -r '.[] | "pr-\(.number)"'
+            }
+
+            function cleanedUpWorkspaces() {
+              sed -E 's/^\*? *([^ ]+) *$/\1/'
+            }
+
+            function onlyPrWorkspaces() {
+              grep -E 'pr-[0-9]+'
+            }
+
+            function prWorkspaces() {
+              terraform workspace list | cleanedUpWorkspaces | onlyPrWorkspaces
+            }
+
+            function withoutOpenPrs() {
+              read workspaces
+              for openPrWorkspace in $(openPrWorkspaces); do
+                workspaces=$(echo "${workspaces[@]}" | grep -v "${openPrWorkspace}")
+              done
+              echo "${workspaces[@]}"
+            }
+
+            cd << parameters.directory >>
+            terraform init
+            for workspace in $(prWorkspaces | withoutOpenPrs); do
+              terraform workspace select "${workspace}"
+              terraform destroy
+              terraform workspace select default
+              terraform workspace delete "${workspace}"
+            done
