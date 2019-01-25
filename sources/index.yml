@@ -206,6 +206,28 @@ commands:
               echo "This workflow is not associated with a pull request; halting"
               circleci-agent step halt
             fi
+  post-pr-comment:
+    parameters:
+      comment:
+        type: string
+      github-access-token:
+        type: string
+    steps:
+      - halt-if-not-pr
+      - run:
+          name: Posting comment to pull request
+          command: |
+            prNumber="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
+
+            curl -X POST \
+              -H 'Accept: application/vnd.github.v3+json' \
+              -H "Authorization: token << parameters.github-access-token >>" \
+              "https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/issues/$prNumber/comments" \
+              --data @- \<<-EOF
+                {
+                  "body": "<< parameters.comment >>"
+                }
+            EOF
 
 jobs:
   install-dependencies-npm:
