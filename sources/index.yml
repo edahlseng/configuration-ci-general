@@ -194,6 +194,18 @@ commands:
               echo "Workspace already exists; selecting"
               terraform workspace select "${workspaceName}"
             fi
+  halt-if-not-pr:
+    description: Check if current workflow is associated with a pull request, halting job if false
+    steps:
+      - run:
+          name: Ensuring workflow is associated with a pull request
+          command: |
+            prNumber="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
+
+            if [[ -z "${prNumber}" ]]; then
+              echo "This workflow is not associated with a pull request; halting"
+              circleci-agent step halt
+            fi
 
 jobs:
   install-dependencies-npm:
