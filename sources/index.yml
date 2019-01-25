@@ -510,6 +510,9 @@ jobs:
       setup-steps:
         type: steps
         default: []
+      workspace:
+        type: string
+        default: default
     executor:
       name: terraform
       tag: << parameters.terraform-image-tag >>
@@ -519,6 +522,9 @@ jobs:
       - run:
           name: Initializing Terraform
           command: cd << parameters.directory >> && terraform init
+      - select-or-create-workspace:
+          directory: << parameters.directory >>
+          workspace-name: << parameters.workspace >>
       - run:
           name: Creating Terraform Plan
           command: cd << parameters.directory >> && terraform plan -out=terraform.plan
@@ -536,6 +542,9 @@ jobs:
       ignore-missing-plan:
         type: boolean
         default: false
+      workspace:
+        type: string
+        default: default
     executor:
       name: terraform
       tag: << parameters.terraform-image-tag >>
@@ -545,6 +554,9 @@ jobs:
       - run:
           name: Initializing Terraform
           command: cd << parameters.directory >> && terraform init
+      - select-or-create-workspace:
+          directory: << parameters.directory >>
+          workspace-name: << parameters.workspace >>
       - run:
           name: Applying Terraform Plan
           command: |
