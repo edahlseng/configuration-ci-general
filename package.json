@@ -1,5 +1,5 @@
 {
-  "name": "ci-configuration-general",
+  "name": "configuration-ci-general",
   "private": true,
   "version": "1.13.0",
   "description": "General Continuous Integration Configuration ------------------------------------",
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/edahlseng/ci-configuration-general.git"
+    "url": "git+https://github.com/edahlseng/configuration-ci-general.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/edahlseng/ci-configuration-general/issues"
+    "url": "https://github.com/edahlseng/configuration-ci-general/issues"
   },
-  "homepage": "https://github.com/edahlseng/ci-configuration-general#readme",
+  "homepage": "https://github.com/edahlseng/configuration-ci-general#readme",
   "dependencies": {},
   "devDependencies": {
     "@eric.dahlseng/linter-configuration": "^0.3.0",
