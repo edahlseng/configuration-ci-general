@@ -650,7 +650,7 @@ jobs:
       name: terraform
       tag: << parameters.terraform-image-tag >>
     steps:
-      - run: get-workspace
+      - get-workspace
       - steps: << parameters.setup-steps >>
       - run:
           name: Finding and destroying outdated PR deployments
