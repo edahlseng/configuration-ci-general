@@ -686,7 +686,7 @@ jobs:
             terraform init
             for workspace in $(prWorkspaces | withoutOpenPrs); do
               terraform workspace select "${workspace}"
-              terraform destroy
+              terraform destroy -auto-approve
               terraform workspace select default
               terraform workspace delete "${workspace}"
             done
