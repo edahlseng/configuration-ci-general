@@ -2,17 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.13.1"></a>
+## [1.13.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.13.0...v1.13.1) (2019-02-05)
+
+
+### Bug Fixes
+
+* Use correct get-workspace command within cleanup-pr-deployments ([ad2068c](https://github.com/edahlseng/configuration-ci-general/commit/ad2068c))
+
+
+
 <a name="1.13.0"></a>
-# [1.13.0](https://github.com/edahlseng/ci-configuration-general/compare/v1.12.0...v1.13.0) (2019-01-25)
+# [1.13.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.12.0...v1.13.0) (2019-01-25)
 
 
 ### Features
 
-* Add cleanup-pr-deployments job ([b16ed12](https://github.com/edahlseng/ci-configuration-general/commit/b16ed12))
-* Add halt-if-not-pr command ([0e058ce](https://github.com/edahlseng/ci-configuration-general/commit/0e058ce))
-* Add post-pr-comment command ([9169b2f](https://github.com/edahlseng/ci-configuration-general/commit/9169b2f))
-* Add select-or-create-workspace command ([a6f49cb](https://github.com/edahlseng/ci-configuration-general/commit/a6f49cb))
-* Add workspace parameter to terraform-plan and terraform-apply jobs ([d641cbe](https://github.com/edahlseng/ci-configuration-general/commit/d641cbe))
+* Add cleanup-pr-deployments job ([b16ed12](https://github.com/edahlseng/configuration-ci-general/commit/b16ed12))
+* Add halt-if-not-pr command ([0e058ce](https://github.com/edahlseng/configuration-ci-general/commit/0e058ce))
+* Add post-pr-comment command ([9169b2f](https://github.com/edahlseng/configuration-ci-general/commit/9169b2f))
+* Add select-or-create-workspace command ([a6f49cb](https://github.com/edahlseng/configuration-ci-general/commit/a6f49cb))
+* Add workspace parameter to terraform-plan and terraform-apply jobs ([d641cbe](https://github.com/edahlseng/configuration-ci-general/commit/d641cbe))
 
 
 
