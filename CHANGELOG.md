@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.13.2"></a>
+## [1.13.2](https://github.com/edahlseng/configuration-ci-general/compare/v1.13.1...v1.13.2) (2019-02-05)
+
+
+### Bug Fixes
+
+* Auto approve the terraform destroy step for cleanup-pr-deployments ([1e9c1fb](https://github.com/edahlseng/configuration-ci-general/commit/1e9c1fb))
+
+
+
 <a name="1.13.1"></a>
 ## [1.13.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.13.0...v1.13.1) (2019-02-05)
 
