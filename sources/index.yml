@@ -635,6 +635,72 @@ jobs:
       - run:
           name: Pushing Docker image
           command: docker push << parameters.tag >>
+  cleanup-isolated-commit-deployments:
+    parameters:
+      directory:
+        type: string
+      terraform-image-tag:
+        type: string
+      github-access-token:
+        type: string
+      setup-steps:
+        type: steps
+        default: []
+      maximumCommitCount:
+        type: integer
+    executor:
+      name: terraform
+      tag: << parameters.terraform-image-tag >>
+    steps:
+      - get-workspace
+      - steps: << parameters.setup-steps >>
+      - run:
+          name: Finding and destroying outdated PR deployments
+          command: |
+            function cleanedUpWorkspaces() {
+              sed -E 's/^\*? *([^ ]+) *$/\1/'
+            }
+
+            function onlyCommitWorkspaces() {
+              grep -E '^git-[0-9a-fA-F]+$'
+            }
+
+            function commitWorkspaces() {
+              cleanedUpWorkspaces | onlyCommitWorkspaces
+            }
+
+            function withoutOutdatedCommits() {
+              read -d '' workspaces
+              for workspace in ${workspaces[@]}; do
+                commit=$(echo "${workspace}" | sed -E 's/^git-(.+)$/\1/')
+                if [[ "$(git rev-list --count HEAD ^"${commit}")" -gt << parameters.maximumCommitCount >> ]]; then
+                  echo ${workspace}
+                fi
+              done
+            }
+
+            cd << parameters.directory >>
+            terraform init
+
+            allWorkspaces="$(terraform workspace list)"
+            echo "The following Terraform workspaces exist:"
+            echo "${allWorkspaces[@]}"
+            echo ""
+
+            workspacesToDestroy="$(echo "${allWorkspaces[@]}" | commitWorkspaces | withoutOutdatedCommits)"
+            echo "The following workspaces are eligible for destruction:"
+            echo "${workspacesToDestroy[@]}"
+            echo ""
+
+            for workspace in ${workspacesToDestroy[@]}; do
+              terraform workspace select "${workspace}"
+              terraform destroy -auto-approve
+              terraform workspace select default
+              terraform workspace delete "${workspace}"
+            done
+
+            echo "The following Terraform workspaces still exist:"
+            terraform workspace list
   cleanup-pr-deployments:
     parameters:
       directory:
