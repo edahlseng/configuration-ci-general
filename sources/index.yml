@@ -336,6 +336,30 @@ jobs:
           command: |
             versionTag=$(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
 
+            # Pull details from changelog
+
+            startCollectingRegExp='^#+ \[?'"${version:1}"'\]?.*$'
+            stopCollectingRegExp='^<a name="[0-9]+\.[0-9]+\.[0-9]+">.*$|^#+ \[?[0-9]+\.[0-9]+\.[0-9]+.*$'
+
+            collectingLines="false"
+            content=""
+            while IFS="" read -r line || [ -n "$line" ]
+            do
+              if [[ "$collectingLines" == "true" ]]; then
+                if [[ "$line" =~ ${stopCollectingRegExp} ]]; then
+                  break
+                fi
+                content="${content}"$'\n'"${line}"
+              elif [[ "$line" =~ ${startCollectingRegExp} ]]; then
+                collectingLines="true"
+              fi
+            done < CHANGELOG.md
+
+            [[ "${content}" =~ ^[[:space:]]*([^[:space:]].*[^[:space:]])[[:space:]]*$ ]]
+            releaseDetails="${BASH_REMATCH[1]}"
+
+            # Create release
+
             curl -X POST \
               -H 'Accept: application/vnd.github.v3+json' \
               -H "Authorization: token << parameters.github-access-token >>" \
@@ -344,6 +368,7 @@ jobs:
                 {
                   "tag_name": "${versionTag}",
                   "name": "Version ${versionTag:1}"
+                  "body": "${releaseDetails}"
                 }
             EOF
 
