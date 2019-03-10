@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.14.0"></a>
+# [1.14.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.13.3...v1.14.0) (2019-03-10)
+
+
+### Features
+
+* Add cleanup-isolated-commit-deployments job ([3960e7f](https://github.com/edahlseng/configuration-ci-general/commit/3960e7f))
+* Add release details to created GitHub releases ([1bd18f6](https://github.com/edahlseng/configuration-ci-general/commit/1bd18f6))
+
+
+
 <a name="1.13.3"></a>
 ## [1.13.3](https://github.com/edahlseng/configuration-ci-general/compare/v1.13.2...v1.13.3) (2019-02-05)
 
