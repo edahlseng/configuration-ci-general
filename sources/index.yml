@@ -9,18 +9,18 @@ orbs:
 executors:
   node:
     docker:
-      - image: circleci/node:10.13.0-jessie
+      - image: circleci/node:10.13.0-stretch
         user: circleci
   buildpack-deps:
     docker:
-      - image: circleci/buildpack-deps:jessie
+      - image: circleci/buildpack-deps:stretch
         user: circleci
   terraform:
     parameters:
       tag:
         type: string
     docker:
-      - image: edahlseng/circleci-terraform:<< parameters.tag >>-jessie
+      - image: edahlseng/circleci-terraform:<< parameters.tag >>-stretch
         user: circleci
 
 commands:
