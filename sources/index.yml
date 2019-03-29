@@ -70,17 +70,17 @@ commands:
     description: Check commit message for chore(release), halting job if false
     steps:
       - run:
-          name: Ensuring commit is not a release commit
+          name: Ensuring commit is a release commit
           command: |
             if [[ ! $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
-              echo "Release commit, halting"
+              echo "Not a release commit, halting"
               circleci-agent step halt
             fi
   halt-if-release-commit:
     description: Check commit message for chore(release), halting job if true
     steps:
       - run:
-          name: Ensuring commit is a release commit
+          name: Ensuring commit is not a release commit
           command: |
             if [[ $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
               echo "Release commit, halting"
