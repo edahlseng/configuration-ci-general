@@ -598,9 +598,14 @@ jobs:
 
             terraform apply "terraform.plan"
   validate-js:
+    parameters:
+      setup-steps:
+        type: steps
+        default: []
     executor: node
     steps:
       - get-workspace
+      - steps: << parameters.setup-steps >>
       - run:
           name: Validating JavaScript files
           command: npm run validate:js
