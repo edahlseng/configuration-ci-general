@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.16.0"></a>
+# [1.16.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.15.0...v1.16.0) (2019-03-29)
+
+
+### Features
+
+* Add setup-steps parameter to validate-js job ([97cd234](https://github.com/edahlseng/configuration-ci-general/commit/97cd234))
+
+
+
 <a name="1.15.0"></a>
 # [1.15.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.14.0...v1.15.0) (2019-03-29)
 
