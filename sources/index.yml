@@ -367,7 +367,7 @@ jobs:
               --data @- \<<-EOF | tee curl.log
                 {
                   "tag_name": "${versionTag}",
-                  "name": "Version ${versionTag:1}"
+                  "name": "Version ${versionTag:1}",
                   "body": "${releaseDetails}"
                 }
             EOF
