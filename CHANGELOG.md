@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.17.0"></a>
+# [1.17.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.16.1...v1.17.0) (2019-04-05)
+
+
+### Features
+
+* Add set-up-npm-authentication command ([27a58d6](https://github.com/edahlseng/configuration-ci-general/commit/27a58d6))
+
+
+
 <a name="1.16.1"></a>
 ## [1.16.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.16.0...v1.16.1) (2019-03-29)
 
