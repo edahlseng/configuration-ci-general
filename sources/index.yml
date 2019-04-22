@@ -385,6 +385,13 @@ jobs:
                 }
             EOF
 
+            idFromResponse=$(cat curl.log | jq -r .id || echo "null")
+
+            if [[ "${idFromResponse}" == "null" ]];
+              echo "Unsuccessful request to create GitHub release"
+              exit 1
+            then
+
             <<# parameters.artifact-paths >>
               artifactPaths=(<< parameters.artifact-paths>>)
               artifactUploadUrl=$(cat curl.log | jq -r .upload_url | sed -r 's/^(.*)\{\?name,label\}$/\1/')
