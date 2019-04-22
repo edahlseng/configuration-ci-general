@@ -370,7 +370,8 @@ jobs:
 
             # Create release
 
-            releaseDetailsForJson=${releaseDetails//$'\n'/"\n"} # Need to escape the newline control character. (See section 2.5: https://www.ietf.org/rfc/rfc4627.txt)
+            releaseDetailsForJson=${releaseDetails//$'\n'/"\n"} # We need to escape the newline control character. (See section 2.5: https://www.ietf.org/rfc/rfc4627.txt)
+            releaseDetailsForJson=${releaseDetailsForJson//'"'/'\"'} # Escape double quotes
 
             curl -X POST \
               -H 'Accept: application/vnd.github.v3+json' \
