@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.18.0"></a>
+# [1.18.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.17.2...v1.18.0) (2019-04-25)
+
+
+### Bug Fixes
+
+* Escape double quotes when creating a GitHub release ([c70c072](https://github.com/edahlseng/configuration-ci-general/commit/c70c072))
+* Exit as error if request to create GitHub release is unsuccessful ([226dc64](https://github.com/edahlseng/configuration-ci-general/commit/226dc64))
+
+
+### Features
+
+* Add `docker_layer_caching` parameter to `build-image` job ([3ebd135](https://github.com/edahlseng/configuration-ci-general/commit/3ebd135))
+
+
+
 <a name="1.17.2"></a>
 ## [1.17.2](https://github.com/edahlseng/configuration-ci-general/compare/v1.17.1...v1.17.2) (2019-04-21)
 
