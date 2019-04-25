@@ -678,10 +678,14 @@ jobs:
       build-options:
         type: string
         default: ""
+      docker_layer_caching:
+        type: boolean
+        default: false
     executor: buildpack-deps
     steps:
       - get-workspace
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: << parameters.docker_layer_caching >>
       - steps: << parameters.setup-steps >>
       - run:
           name: Building Docker image
