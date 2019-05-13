@@ -3,7 +3,7 @@ version: 2.1
 orbs:
   circleci-cli: circleci/circleci-cli@0.1.1
   orbs: circleci/orb-tools@2.0.2
-  general: edahlseng/general@1.18.2
+  general: edahlseng/general@1.18.3
 
 workflows:
   main:
