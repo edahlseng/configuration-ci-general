@@ -462,17 +462,11 @@ jobs:
               fi
             done < CHANGELOG.md
 
-            [[ "${content}" =~ ^[[:space:]]*([^[:space:]].*[^[:space:]])[[:space:]]*$ ]]
-            releaseDetails="${BASH_REMATCH[1]}"
-            echo "Release details are:"
-            echo "${releaseDetails}"
-            echo ""
-
-            if [[ -z "${releaseDetails}" ]]; then
-              # If the Changelog is empty, then let's not create a PR. In the worst
-              # case, we'll over-eagerly avoid automatically creating a PR, but
-              # the branch will still have been pushed, so the user can easily
-              # create a PR if need be.
+            if ! [[ "${content}" =~ ^[[:space:]]*([^[:space:]].*[^[:space:]])[[:space:]]*$ ]]; then
+              # The Changelog is empty, so let's not create a PR. In the worst case,
+              # we'll over-eagerly avoid automatically creating a PR, but the branch
+              # will still have been pushed, so the user can easily create a PR
+              # if need be.
 
               echo "Changelog appears to be empty. Exiting..."
               exit 0
