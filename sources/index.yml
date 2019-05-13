@@ -72,7 +72,7 @@ commands:
       - run:
           name: Ensuring commit is a release commit
           command: |
-            if [[ ! $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
+            if [[ ! $(git log --format=%B -n 1 ${CIRCLE_SHA1} | head -n 1) =~ chore\(release\): ]]; then
               echo "Not a release commit, halting"
               circleci-agent step halt
             fi
@@ -82,7 +82,7 @@ commands:
       - run:
           name: Ensuring commit is not a release commit
           command: |
-            if [[ $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) =~ chore\(release\): ]]; then
+            if [[ $(git log --format=%B -n 1 ${CIRCLE_SHA1} | head -n 1) =~ chore\(release\): ]]; then
               echo "Release commit, halting"
               circleci-agent step halt
             fi
@@ -121,10 +121,10 @@ commands:
       - run:
           name: Creating Git tag
           command: |
-            versionTag=$(echo $(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1) | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
+            versionTag=$(git log --format=%B -n 1 ${CIRCLE_SHA1} | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
 
             echo "Tagging commit"
-            git tag "$versionTag"
+            git tag "${versionTag}"
       - run:
           name: Pushing tag to Git remote
           command: git push --tags
@@ -151,10 +151,10 @@ commands:
             aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}
             EOF
 
-            echo 'unset AWS_ACCESS_KEY_ID' >> $BASH_ENV
-            echo 'unset AWS_SECRET_ACCESS_KEY' >> $BASH_ENV
-            echo 'export AWS_PROFILE="infrastructure"' >> $BASH_ENV
-            echo 'export AWS_SDK_LOAD_CONFIG=1' >> $BASH_ENV
+            echo 'unset AWS_ACCESS_KEY_ID' >> ${BASH_ENV}
+            echo 'unset AWS_SECRET_ACCESS_KEY' >> ${BASH_ENV}
+            echo 'export AWS_PROFILE="infrastructure"' >> ${BASH_ENV}
+            echo 'export AWS_SDK_LOAD_CONFIG=1' >> ${BASH_ENV}
   login-ecr:
     parameters:
       aws-region:
@@ -222,7 +222,7 @@ commands:
             curl -X POST \
               -H 'Accept: application/vnd.github.v3+json' \
               -H "Authorization: token << parameters.github-access-token >>" \
-              "https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/issues/$prNumber/comments" \
+              "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/issues/${prNumber}/comments" \
               --data @- \<<-EOF
                 {
                   "body": "<< parameters.comment >>"
@@ -344,7 +344,7 @@ jobs:
       - run:
           name: Creating release
           command: |
-            versionTag=$(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
+            versionTag=$(git log --format=%B -n 1 ${CIRCLE_SHA1} | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
 
             # Pull details from changelog
 
@@ -353,14 +353,14 @@ jobs:
 
             collectingLines="false"
             content=""
-            while IFS="" read -r line || [ -n "$line" ]
+            while IFS="" read -r line || [ -n "${line}" ]
             do
-              if [[ "$collectingLines" == "true" ]]; then
-                if [[ "$line" =~ ${stopCollectingRegExp} ]]; then
+              if [[ "${collectingLines}" == "true" ]]; then
+                if [[ "${line}" =~ ${stopCollectingRegExp} ]]; then
                   break
                 fi
                 content="${content}"$'\n'"${line}"
-              elif [[ "$line" =~ ${startCollectingRegExp} ]]; then
+              elif [[ "${line}" =~ ${startCollectingRegExp} ]]; then
                 collectingLines="true"
               fi
             done < CHANGELOG.md
@@ -376,7 +376,7 @@ jobs:
             curl -X POST \
               -H 'Accept: application/vnd.github.v3+json' \
               -H "Authorization: token << parameters.github-access-token >>" \
-              "https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/releases" \
+              "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/releases" \
               --data @- \<<-EOF | tee curl.log
                 {
                   "tag_name": "${versionTag}",
@@ -438,12 +438,49 @@ jobs:
       - run:
           name: Creating or updating pull request
           command: |
-            versionTag=$(cat package.json | grep -E '^\s*"version":\s*"[0-9]+\.[0-9]+\.[0-9]+",?\s*$' | sed -r 's/.*([0-9]+\.[0-9]+\.[0-9]+).*/v\1/')
+            versionTag=$(git log --format=%B -n 1 HEAD | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
+
+            # ------------------------------------------------------------------
+            # Examine CHANGELOG to see if if there were any release-worthy changes
+            # ------------------------------------------------------------------
+
+            startCollectingRegExp='^#+ \[?'"${versionTag:1}"'\]?.*$'
+            stopCollectingRegExp='^<a name="[0-9]+\.[0-9]+\.[0-9]+">.*$|^#+ \[?[0-9]+\.[0-9]+\.[0-9]+.*$'
+
+            collectingLines="false"
+            content=""
+            while IFS="" read -r line || [ -n "${line}" ]
+            do
+              if [[ "${collectingLines}" == "true" ]]; then
+                if [[ "${line}" =~ ${stopCollectingRegExp} ]]; then
+                  break
+                fi
+                content="${content}"$'\n'"${line}"
+              elif [[ "${line}" =~ ${startCollectingRegExp} ]]; then
+                collectingLines="true"
+              fi
+            done < CHANGELOG.md
+
+            [[ "${content}" =~ ^[[:space:]]*([^[:space:]].*[^[:space:]])[[:space:]]*$ ]]
+            releaseDetails="${BASH_REMATCH[1]}"
+
+            if [[ -z "${releaseDetails}" ]]; then
+              # If the Changelog is empty, then let's not create a PR. In the worst
+              # case, we'll over-eagerly avoid automatically creating a PR, but
+              # the branch will still have been pushed, so the user can easily
+              # create a PR if need be.
+
+              circleci-agent step halt
+            fi
+
+            # ------------------------------------------------------------------
+            # Create Pull Request
+            # ------------------------------------------------------------------
 
             curl -w "%{http_code}\n" -X POST \
               -H 'Accept: application/vnd.github.v3+json' \
               -H "Authorization: token << parameters.github-access-token >>" \
-              https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls \
+              https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls \
               --data @- \<<-EOF | tee curl.log
                 {
                   "title": "New Release: ${versionTag}",
@@ -453,13 +490,13 @@ jobs:
                 }
             EOF
 
-            releasePullRequestNumber=$(curl -X GET -H 'Accept: application/vnd.github.v3+json' "https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls?base=master&head=ci%2Frelease" | grep -E '^\s*"number":\s*[0-9]+,?\s*$' | sed -E 's/.*[^[0-9]([0-9]+)[^0-9].*/\1/')
+            releasePullRequestNumber=$(curl -X GET -H 'Accept: application/vnd.github.v3+json' "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls?base=master&head=ci%2Frelease" | grep -E '^\s*"number":\s*[0-9]+,?\s*$' | sed -E 's/.*[^[0-9]([0-9]+)[^0-9].*/\1/')
 
             if [[ $(cat curl.log | tail -n 1) == 422 ]]; then
               curl -X PATCH \
                 -H 'Accept: application/vnd.github.v3+json' \
                 -H "Authorization: token << parameters.github-access-token >>" \
-                https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls/$releasePullRequestNumber \
+                https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls/${releasePullRequestNumber} \
                 --data @- \<<-EOF
                   {
                     "title": "New Release: ${versionTag}"
@@ -473,7 +510,7 @@ jobs:
         description: A versionless orb-ref in the form <namespace>/<orb-name>
         type: string
       token-variable:
-        description: The env var containing your token. Pass this as a literal string such as `$ORB_PUBLISHING_TOKEN`. Do not paste the actual token into your configuration.
+        description: The env var containing your token. Pass this as a literal string such as `${ORB_PUBLISHING_TOKEN}`. Do not paste the actual token into your configuration.
         type: string
     steps:
       - get-workspace
@@ -511,7 +548,7 @@ jobs:
         description: A versionless orb-ref in the form <namespace>/<orb-name>
         type: string
       token-variable:
-        description: The env var containing your token. Pass this as a literal string such as `$ORB_PUBLISHING_TOKEN`. Do not paste the actual token into your configuration.
+        description: The env var containing your token. Pass this as a literal string such as `${ORB_PUBLISHING_TOKEN}`. Do not paste the actual token into your configuration.
         type: string
     steps:
       - get-workspace
@@ -524,7 +561,7 @@ jobs:
       - orbs/publish:
           orb-path: sources/index.yml
           orb-ref: >-
-            << parameters.orb-ref >>@$(git log --format=%B -n 1 $CIRCLE_SHA1 | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/\1/')
+            << parameters.orb-ref >>@$(git log --format=%B -n 1 ${CIRCLE_SHA1} | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/\1/')
           token-variable: << parameters.token-variable >>
   tag-and-publish-npm:
     executor: node
@@ -657,7 +694,7 @@ jobs:
             directories=(<< parameters.directories >>)
 
             for directory in "${directories[@]}"; do
-              cd $directory
+              cd ${directory}
               terraform init
               <<# parameters.run-validate-after-init >>
                 terraform validate
@@ -783,7 +820,7 @@ jobs:
               curl -X GET \
                 -H 'Accept: application/vnd.github.v3+json' \
                 -H "Authorization: token << parameters.github-access-token >>" \
-                "https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls" | jq -r '.[] | "pr-\(.number)"'
+                "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls" | jq -r '.[] | "pr-\(.number)"'
             }
 
             function cleanedUpWorkspaces() {
