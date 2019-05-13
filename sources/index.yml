@@ -439,6 +439,7 @@ jobs:
           name: Creating or updating pull request
           command: |
             versionTag=$(git log --format=%B -n 1 HEAD | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
+            echo "Version tag is: ${versionTag}"
 
             # ------------------------------------------------------------------
             # Examine CHANGELOG to see if if there were any release-worthy changes
@@ -463,6 +464,9 @@ jobs:
 
             [[ "${content}" =~ ^[[:space:]]*([^[:space:]].*[^[:space:]])[[:space:]]*$ ]]
             releaseDetails="${BASH_REMATCH[1]}"
+            echo "Release details are:"
+            echo "${releaseDetails}"
+            echo ""
 
             if [[ -z "${releaseDetails}" ]]; then
               # If the Changelog is empty, then let's not create a PR. In the worst
@@ -470,12 +474,15 @@ jobs:
               # the branch will still have been pushed, so the user can easily
               # create a PR if need be.
 
-              circleci-agent step halt
+              echo "Changelog appears to be empty. Exiting..."
+              exit 0
             fi
 
             # ------------------------------------------------------------------
             # Create Pull Request
             # ------------------------------------------------------------------
+
+            echo "Creating pull request..."
 
             curl -w "%{http_code}\n" -X POST \
               -H 'Accept: application/vnd.github.v3+json' \
@@ -493,6 +500,8 @@ jobs:
             releasePullRequestNumber=$(curl -X GET -H 'Accept: application/vnd.github.v3+json' "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls?base=master&head=ci%2Frelease" | grep -E '^\s*"number":\s*[0-9]+,?\s*$' | sed -E 's/.*[^[0-9]([0-9]+)[^0-9].*/\1/')
 
             if [[ $(cat curl.log | tail -n 1) == 422 ]]; then
+              echo "Pull request already exists. Updating title to use the new version..."
+
               curl -X PATCH \
                 -H 'Accept: application/vnd.github.v3+json' \
                 -H "Authorization: token << parameters.github-access-token >>" \
