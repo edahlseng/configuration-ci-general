@@ -240,6 +240,19 @@ commands:
             npm whoami
 
 jobs:
+  build:
+    parameters:
+      executor:
+        type: executor
+        default: buildpack-deps
+    executor: << parameters.executor >>
+    steps:
+      - get-workspace
+      - run:
+          name: Building
+          command: make build
+      - put-directory:
+          path: .
   install-dependencies-npm:
     parameters:
       setup-steps:
