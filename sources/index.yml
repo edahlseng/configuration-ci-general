@@ -332,12 +332,16 @@ jobs:
       - put-test-results:
           path: ./linting-results
   test:
-    executor: circleci-cli/default
+    parameters:
+      executor:
+        type: executor
+        default: buildpack-deps
+    executor: << parameters.executor >>
     steps:
       - get-workspace
       - run:
           name: Running tests
-          command: npm run test-report
+          command: make test-report
       - put-test-results:
           path: ./test-results
       - store_artifacts:
