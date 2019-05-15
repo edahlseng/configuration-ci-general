@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.19.0"></a>
+# [1.19.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.18.3...v1.19.0) (2019-05-15)
+
+
+### Features
+
+* Add build job ([d46e8b3](https://github.com/edahlseng/configuration-ci-general/commit/d46e8b3))
+
+
+
 <a name="1.18.3"></a>
 ## [1.18.3](https://github.com/edahlseng/configuration-ci-general/compare/v1.18.2...v1.18.3) (2019-05-13)
 
