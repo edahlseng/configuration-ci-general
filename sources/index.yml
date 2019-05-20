@@ -619,6 +619,9 @@ jobs:
       workspace:
         type: string
         default: default
+      lock-timeout:
+        type: string
+        default: "0s"
     executor:
       name: terraform
       tag: << parameters.terraform-image-tag >>
@@ -633,7 +636,7 @@ jobs:
           workspace-name: << parameters.workspace >>
       - run:
           name: Creating Terraform Plan
-          command: cd << parameters.directory >> && terraform plan -out=terraform.plan
+          command: cd << parameters.directory >> && terraform plan -lock-timeout=<< parameters.lock-timeout >> -out=terraform.plan
       - put-path:
           path: << parameters.directory >>/terraform.plan
   terraform-apply:
@@ -651,6 +654,9 @@ jobs:
       workspace:
         type: string
         default: default
+      lock-timeout:
+        type: string
+        default: "0s"
     executor:
       name: terraform
       tag: << parameters.terraform-image-tag >>
@@ -670,14 +676,14 @@ jobs:
 
             <<# parameters.ignore-missing-plan >>
               if [[ -e "terraform.plan" ]]; then
-                terraform apply "terraform.plan"
+                terraform apply -lock-timeout=<< parameters.lock-timeout >> "terraform.plan"
               else
-                terraform apply -auto-approve
+                terraform apply -lock-timeout=<< parameters.lock-timeout >> -auto-approve
               fi
               exit
             <</ parameters.ignore-missing-plan >>
 
-            terraform apply "terraform.plan"
+            terraform apply -lock-timeout=<< parameters.lock-timeout >> "terraform.plan"
   validate-js:
     parameters:
       setup-steps:
@@ -763,6 +769,9 @@ jobs:
         default: []
       maximumCommitCount:
         type: integer
+      lock-timeout:
+        type: string
+        default: "0s"
     executor:
       name: terraform
       tag: << parameters.terraform-image-tag >>
@@ -809,7 +818,7 @@ jobs:
 
             for workspace in ${workspacesToDestroy[@]}; do
               terraform workspace select "${workspace}"
-              terraform destroy -auto-approve
+              terraform destroy -lock-timeout=<< parameters.lock-timeout >> -auto-approve
               terraform workspace select default
               terraform workspace delete "${workspace}"
             done
@@ -827,6 +836,9 @@ jobs:
       setup-steps:
         type: steps
         default: []
+      lock-timeout:
+        type: string
+        default: "0s"
     executor:
       name: terraform
       tag: << parameters.terraform-image-tag >>
@@ -867,7 +879,7 @@ jobs:
             terraform init
             for workspace in $(prWorkspaces | withoutOpenPrs); do
               terraform workspace select "${workspace}"
-              terraform destroy -auto-approve
+              terraform destroy -lock-timeout=<< parameters.lock-timeout >> -auto-approve
               terraform workspace select default
               terraform workspace delete "${workspace}"
             done
