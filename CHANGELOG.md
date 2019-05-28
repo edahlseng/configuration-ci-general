@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.20.1"></a>
+## [1.20.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.20.0...v1.20.1) (2019-05-28)
+
+
+### Bug Fixes
+
+* Prevent error exit when grep doesn't match any lines ([d71ab70](https://github.com/edahlseng/configuration-ci-general/commit/d71ab70))
+
+
+
 <a name="1.20.0"></a>
 # [1.20.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.19.1...v1.20.0) (2019-05-20)
 
