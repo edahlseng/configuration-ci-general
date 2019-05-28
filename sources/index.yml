@@ -786,7 +786,8 @@ jobs:
             }
 
             function onlyCommitWorkspaces() {
-              grep -E '^git-[0-9a-fA-F]+$'
+              # For more context on the error handling, see: https://stackoverflow.com/questions/6550484/prevent-grep-returning-an-error-when-input-doesnt-match/49627999#49627999
+              grep -E '^git-[0-9a-fA-F]+$' || test $? = 1
             }
 
             function commitWorkspaces() {
@@ -860,7 +861,8 @@ jobs:
             }
 
             function onlyPrWorkspaces() {
-              grep -E 'pr-[0-9]+'
+              # For more context on the error handling, see: https://stackoverflow.com/questions/6550484/prevent-grep-returning-an-error-when-input-doesnt-match/49627999#49627999
+              grep -E '^pr-[0-9]+$' || test $? = 1
             }
 
             function prWorkspaces() {
