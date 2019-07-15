@@ -238,6 +238,54 @@ commands:
           command: |
             echo "//registry.npmjs.org/:_authToken=<< parameters.npm-authentication-token >>" > .npmrc
             npm whoami
+  check-docker-image-service-health:
+    parameters:
+      docker-image:
+        type: string
+      docker-run-arguments:
+        type: string
+        default: ""
+      health-check-use-https:
+        type: boolean
+        default: false
+      health-check-port:
+        type: integer
+        default: 80
+      health-check-path:
+        type: string
+    steps:
+      - run:
+          name: Checking service health from Docker image
+          command: |
+            echo "Creating container..."
+
+            containerId=$(docker run << parameters.docker-run-arguments >> --detach << parameters.docker-image >>)
+
+            echo "Checking health of container..."
+            healthCheckPassed="false"
+            protocol="http<<# parameters.health-check-use-https >>s<</ parameters.health-check-use-https >>"
+            for index in {1..10}; do
+              # We use wget below, as it should be available even on Alpine Linux. Redirecting stderr to stdout
+              # helps ensure that the server response is printed before the request body
+              if docker exec "${containerId}" wget -q -S -O - "${protocol}://127.0.0.1:<< parameters.health-check-port >><< parameters.health-check-path >>" 2>&1; then
+                healthCheckPassed="true"
+                break
+              fi
+              sleep 1 # Wait one second
+            done
+
+            statusCode=1
+            if [[ "${healthCheckPassed}" == "true" ]]; then
+              statusCode=0
+            else
+              echo "Health check failed. Container logs:"
+              docker logs "${containerId}"
+            fi
+
+            docker stop "${containerId}" > /dev/null || true
+            docker rm "${containerId}" > /dev/null
+
+            exit ${statusCode}
 
 jobs:
   build:
