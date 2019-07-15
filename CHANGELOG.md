@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.21.0"></a>
+# [1.21.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.20.1...v1.21.0) (2019-07-15)
+
+
+### Features
+
+* Add check-docker-image-service-health command ([e85af0b](https://github.com/edahlseng/configuration-ci-general/commit/e85af0b))
+
+
+
 <a name="1.20.1"></a>
 ## [1.20.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.20.0...v1.20.1) (2019-05-28)
 
