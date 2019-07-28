@@ -452,10 +452,10 @@ jobs:
 
             idFromResponse=$(cat curl.log | jq -r .id || echo "null")
 
-            if [[ "${idFromResponse}" == "null" ]];
+            if [[ "${idFromResponse}" == "null" ]]; then
               echo "Unsuccessful request to create GitHub release"
               exit 1
-            then
+            fi
 
             <<# parameters.artifact-paths >>
               artifactPaths=(<< parameters.artifact-paths>>)
