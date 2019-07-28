@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.21.1"></a>
+## [1.21.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.21.0...v1.21.1) (2019-07-28)
+
+
+### Bug Fixes
+
+* Correct typo, allowing create-github-release job to now finish ([31df1c3](https://github.com/edahlseng/configuration-ci-general/commit/31df1c3))
+
+
+
 <a name="1.21.0"></a>
 # [1.21.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.20.1...v1.21.0) (2019-07-15)
 
