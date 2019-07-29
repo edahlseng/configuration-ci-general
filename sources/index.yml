@@ -298,7 +298,19 @@ jobs:
       - get-workspace
       - run:
           name: Building
-          command: make build
+          command: |
+            if which make && [[ -e Makefile ]]; then
+              make build
+              exit 0
+            fi
+
+            if which npm [[ -e package.json ]]; then
+              npm run build
+              exit 0
+            fi
+
+            echo "Unable to find a command runner"
+            exit 1
       - put-directory:
           path: .
   install-dependencies-npm:
@@ -389,7 +401,19 @@ jobs:
       - get-workspace
       - run:
           name: Running tests
-          command: make test-report
+          command: |
+            if which make && [[ -e Makefile ]]; then
+              make test-report
+              exit 0
+            fi
+
+            if which npm [[ -e package.json ]]; then
+              npm run test-report
+              exit 0
+            fi
+
+            echo "Unable to find a command runner"
+            exit 1
       - put-test-results:
           path: ./test-results
       - store_artifacts:
