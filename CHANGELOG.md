@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.22.0"></a>
+# [1.22.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.21.1...v1.22.0) (2019-07-29)
+
+
+### Features
+
+* Fall back from Makefile to NPM in build and test jobs ([e8d5a6e](https://github.com/edahlseng/configuration-ci-general/commit/e8d5a6e))
+
+
+
 <a name="1.21.1"></a>
 ## [1.21.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.21.0...v1.21.1) (2019-07-28)
 
