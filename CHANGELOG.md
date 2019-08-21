@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.22.1"></a>
+## [1.22.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.22.0...v1.22.1) (2019-08-21)
+
+
+### Dependency Updates
+
+* Bump node executor from 10.13.0 to 10.16.3 ([b60ddbe](https://github.com/edahlseng/configuration-ci-general/commit/b60ddbe))
+
+
+
 <a name="1.22.0"></a>
 # [1.22.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.21.1...v1.22.0) (2019-07-29)
 
