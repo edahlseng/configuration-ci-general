@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.22.2"></a>
+## [1.22.2](https://github.com/edahlseng/configuration-ci-general/compare/v1.22.1...v1.22.2) (2019-09-09)
+
+
+### Bug Fixes
+
+* Handle existing pull request not found ([e9f9baa](https://github.com/edahlseng/configuration-ci-general/commit/e9f9baa))
+* Include authorization token when looking for existing pull request ([26a04a8](https://github.com/edahlseng/configuration-ci-general/commit/26a04a8))
+* Include username in head ref when searching for existing PR ([3017df8](https://github.com/edahlseng/configuration-ci-general/commit/3017df8))
+
+
+
 <a name="1.22.1"></a>
 ## [1.22.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.22.0...v1.22.1) (2019-08-21)
 
