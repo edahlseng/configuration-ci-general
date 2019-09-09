@@ -580,9 +580,9 @@ jobs:
                 }
             EOF
 
-            releasePullRequestNumber=$(curl -X GET -H 'Accept: application/vnd.github.v3+json' "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls?base=master&head=ci%2Frelease" | grep -E '^\s*"number":\s*[0-9]+,?\s*$' | sed -E 's/.*[^[0-9]([0-9]+)[^0-9].*/\1/')
+            releasePullRequestNumber=$(curl -X GET -H 'Accept: application/vnd.github.v3+json' "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pulls?base=master&head=ci%2Frelease" | { grep -E '^\s*"number":\s*[0-9]+,?\s*$' || true; } | sed -E 's/.*[^[0-9]([0-9]+)[^0-9].*/\1/')
 
-            if [[ $(cat curl.log | tail -n 1) == 422 ]]; then
+            if [[ $(cat curl.log | tail -n 1) == 422 && -n "${releasePullRequestNumber}" ]]; then
               echo "Pull request already exists. Updating title to use the new version..."
 
               curl -X PATCH \
