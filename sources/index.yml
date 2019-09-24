@@ -708,7 +708,7 @@ jobs:
           workspace-name: << parameters.workspace >>
       - run:
           name: Creating Terraform Plan
-          command: cd << parameters.directory >> && terraform plan -lock-timeout=<< parameters.lock-timeout >> -out=terraform.plan
+          command: cd << parameters.directory >> && terraform plan -lock-timeout=<< parameters.lock-timeout >> -out=terraform.plan | tee terraform-output.log
       - put-path:
           path: << parameters.directory >>/terraform.plan
   terraform-apply:
@@ -748,14 +748,14 @@ jobs:
 
             <<# parameters.ignore-missing-plan >>
               if [[ -e "terraform.plan" ]]; then
-                terraform apply -lock-timeout=<< parameters.lock-timeout >> "terraform.plan"
+                terraform apply -lock-timeout=<< parameters.lock-timeout >> "terraform.plan" | tee terraform-output.log
               else
-                terraform apply -lock-timeout=<< parameters.lock-timeout >> -auto-approve
+                terraform apply -lock-timeout=<< parameters.lock-timeout >> -auto-approve | tee terraform-output.log
               fi
               exit
             <</ parameters.ignore-missing-plan >>
 
-            terraform apply -lock-timeout=<< parameters.lock-timeout >> "terraform.plan"
+            terraform apply -lock-timeout=<< parameters.lock-timeout >> "terraform.plan" | tee terraform-output.log
   validate-js:
     parameters:
       setup-steps:
