@@ -702,13 +702,13 @@ jobs:
       - steps: << parameters.setup-steps >>
       - run:
           name: Initializing Terraform
-          command: cd << parameters.directory >> && terraform init
+          command: cd << parameters.directory >> && terraform init -input=false
       - select-or-create-workspace:
           directory: << parameters.directory >>
           workspace-name: << parameters.workspace >>
       - run:
           name: Creating Terraform Plan
-          command: cd << parameters.directory >> && terraform plan -lock-timeout=<< parameters.lock-timeout >> -out=terraform.plan | tee terraform-output.log
+          command: cd << parameters.directory >> && terraform plan -input=false -lock-timeout=<< parameters.lock-timeout >> -out=terraform.plan | tee terraform-output.log
       - put-path:
           path: << parameters.directory >>/terraform.plan
   terraform-apply:
@@ -737,7 +737,7 @@ jobs:
       - steps: << parameters.setup-steps >>
       - run:
           name: Initializing Terraform
-          command: cd << parameters.directory >> && terraform init
+          command: cd << parameters.directory >> && terraform init -input=false
       - select-or-create-workspace:
           directory: << parameters.directory >>
           workspace-name: << parameters.workspace >>
@@ -748,14 +748,14 @@ jobs:
 
             <<# parameters.ignore-missing-plan >>
               if [[ -e "terraform.plan" ]]; then
-                terraform apply -lock-timeout=<< parameters.lock-timeout >> "terraform.plan" | tee terraform-output.log
+                terraform apply -input=false -lock-timeout=<< parameters.lock-timeout >> "terraform.plan" | tee terraform-output.log
               else
-                terraform apply -lock-timeout=<< parameters.lock-timeout >> -auto-approve | tee terraform-output.log
+                terraform apply -input=false -lock-timeout=<< parameters.lock-timeout >> -auto-approve | tee terraform-output.log
               fi
               exit
             <</ parameters.ignore-missing-plan >>
 
-            terraform apply -lock-timeout=<< parameters.lock-timeout >> "terraform.plan" | tee terraform-output.log
+            terraform apply -input=false -lock-timeout=<< parameters.lock-timeout >> "terraform.plan" | tee terraform-output.log
   validate-js:
     parameters:
       setup-steps:
@@ -793,7 +793,7 @@ jobs:
 
             for directory in "${directories[@]}"; do
               cd ${directory}
-              terraform init
+              terraform init -input=false
               <<# parameters.run-validate-after-init >>
                 terraform validate
               <</ parameters.run-validate-after-init >>
@@ -877,7 +877,7 @@ jobs:
             }
 
             cd << parameters.directory >>
-            terraform init
+            terraform init -input=false
 
             allWorkspaces="$(terraform workspace list)"
             echo "The following Terraform workspaces exist:"
@@ -950,7 +950,7 @@ jobs:
             }
 
             cd << parameters.directory >>
-            terraform init
+            terraform init -input=false
             for workspace in $(prWorkspaces | withoutOpenPrs); do
               terraform workspace select "${workspace}"
               terraform destroy -lock-timeout=<< parameters.lock-timeout >> -auto-approve
