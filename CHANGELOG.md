@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.23.0"></a>
+# [1.23.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.22.2...v1.23.0) (2019-09-25)
+
+
+### Features
+
+* Prevent Terraform from asking for input for variables not set ([446b9c2](https://github.com/edahlseng/configuration-ci-general/commit/446b9c2))
+* Save Terraform output to log file during plan and apply ([9fc69f2](https://github.com/edahlseng/configuration-ci-general/commit/9fc69f2))
+
+
+
 <a name="1.22.2"></a>
 ## [1.22.2](https://github.com/edahlseng/configuration-ci-general/compare/v1.22.1...v1.22.2) (2019-09-09)
 
