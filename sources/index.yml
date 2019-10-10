@@ -304,7 +304,7 @@ jobs:
               exit 0
             fi
 
-            if which npm [[ -e package.json ]]; then
+            if which npm && [[ -e package.json ]]; then
               npm run build
               exit 0
             fi
@@ -407,7 +407,7 @@ jobs:
               exit 0
             fi
 
-            if which npm [[ -e package.json ]]; then
+            if which npm && [[ -e package.json ]]; then
               npm run test-report
               exit 0
             fi
