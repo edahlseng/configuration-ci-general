@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.23.1"></a>
+## [1.23.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.23.0...v1.23.1) (2019-10-10)
+
+
+### Bug Fixes
+
+* Fix check for NPM in build and test jobs ([6415183](https://github.com/edahlseng/configuration-ci-general/commit/6415183))
+* Reduce logs when checking for command runner in build and test jobs ([291a82f](https://github.com/edahlseng/configuration-ci-general/commit/291a82f))
+
+
+
 <a name="1.23.0"></a>
 # [1.23.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.22.2...v1.23.0) (2019-09-25)
 
