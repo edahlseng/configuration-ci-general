@@ -299,12 +299,12 @@ jobs:
       - run:
           name: Building
           command: |
-            if which make && [[ -e Makefile ]]; then
+            if which make > /dev/null && [[ -e Makefile ]]; then
               make build
               exit 0
             fi
 
-            if which npm && [[ -e package.json ]]; then
+            if which npm > /dev/null && [[ -e package.json ]]; then
               npm run build
               exit 0
             fi
@@ -402,12 +402,12 @@ jobs:
       - run:
           name: Running tests
           command: |
-            if which make && [[ -e Makefile ]]; then
+            if which make > /dev/null && [[ -e Makefile ]]; then
               make test-report
               exit 0
             fi
 
-            if which npm && [[ -e package.json ]]; then
+            if which npm > /dev/null && [[ -e package.json ]]; then
               npm run test-report
               exit 0
             fi
