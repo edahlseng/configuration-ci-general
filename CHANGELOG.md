@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.24.0"></a>
+# [1.24.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.23.1...v1.24.0) (2019-10-13)
+
+
+### Features
+
+* Add NPM dependency caching to install-dependencies-npm job ([9ed2f8f](https://github.com/edahlseng/configuration-ci-general/commit/9ed2f8f))
+
+
+
 <a name="1.23.1"></a>
 ## [1.23.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.23.0...v1.23.1) (2019-10-10)
 
