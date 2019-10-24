@@ -313,6 +313,19 @@ jobs:
             exit 1
       - put-directory:
           path: .
+  checkout:
+    parameters:
+      setup-steps:
+        type: steps
+        default: []
+      executor:
+        type: executor
+        default: buildpack-deps
+    executor: << parameters.executor >>
+    steps:
+      - checkout
+      - steps: << parameters.setup-steps >>
+      - put-all
   install-dependencies-npm:
     parameters:
       setup-steps:
