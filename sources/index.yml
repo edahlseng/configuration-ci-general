@@ -365,6 +365,34 @@ jobs:
           key: node_modules-{{ arch }}-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
+  lint:
+    parameters:
+      executor:
+        type: executor
+        default: buildpack-deps
+      language:
+        type: string
+        description: The language to lint
+        default: ""
+    executor: << parameters.executor >>
+    steps:
+      - get-workspace
+      - run:
+          name: Linting << parameters.language >>
+          command: |
+            if which make > /dev/null && [[ -e Makefile ]]; then
+              make lint<<# parameters.language >>-<</ parameters.language >><< parameters.language >>
+              exit 0
+            fi
+
+            if which npm > /dev/null && [[ -e package.json ]]; then
+              npm run lint<<# parameters.language >>-<</ parameters.language >><< parameters.language >>
+              exit 0
+            fi
+
+            echo "Unable to find a command runner"
+            exit 1
+
   lint-circleci-orb:
     executor: circleci-cli/default
     steps:
