@@ -293,6 +293,10 @@ jobs:
       executor:
         type: executor
         default: buildpack-deps
+      variant:
+        type: string
+        description: The variant to build
+        default: ""
     executor: << parameters.executor >>
     steps:
       - get-workspace
@@ -300,12 +304,12 @@ jobs:
           name: Building
           command: |
             if which make > /dev/null && [[ -e Makefile ]]; then
-              make build
+              make build<<# parameters.variant >>-<</ parameters.variant >><< parameters.variant >>
               exit 0
             fi
 
             if which npm > /dev/null && [[ -e package.json ]]; then
-              npm run build
+              npm run build<<# parameters.variant >>-<</ parameters.variant >><< parameters.variant >>
               exit 0
             fi
 
