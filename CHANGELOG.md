@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.25.0"></a>
+# [1.25.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.24.0...v1.25.0) (2019-10-24)
+
+
+### Features
+
+* Add checkout job ([ca86ff4](https://github.com/edahlseng/configuration-ci-general/commit/ca86ff4))
+* Add generic lint job ([104f06a](https://github.com/edahlseng/configuration-ci-general/commit/104f06a))
+* Add variant parameter to build job ([7ac6b04](https://github.com/edahlseng/configuration-ci-general/commit/7ac6b04))
+
+
+
 <a name="1.24.0"></a>
 # [1.24.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.23.1...v1.24.0) (2019-10-13)
 
