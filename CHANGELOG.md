@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.26.0"></a>
+# [1.26.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.25.0...v1.26.0) (2019-11-27)
+
+
+### Features
+
+* Add recursive and directory parameters in lint-terraform ([ffcf380](https://github.com/edahlseng/configuration-ci-general/commit/ffcf380))
+
+
+
 <a name="1.25.0"></a>
 # [1.25.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.24.0...v1.25.0) (2019-10-24)
 
