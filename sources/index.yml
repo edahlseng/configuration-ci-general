@@ -441,6 +441,12 @@ jobs:
           path: ./linting-results
   lint-terraform:
     parameters:
+      directory:
+        type: string
+        default: "."
+      recursive:
+        type: boolean
+        default: true
       terraform-image-tag:
         type: string
     executor:
@@ -450,7 +456,15 @@ jobs:
       - get-workspace
       - run:
           name: Linting Terraform files
-          command: terraform fmt -check=true
+          command: |
+            cd << parameters.directory >>
+
+            recursive_arg=""
+            if << parameters.recursive >>; then
+               recursive_arg="-recursive"
+            fi
+
+            terraform fmt -check=true $recursive_arg
   lint-yaml:
     executor: node
     steps:
