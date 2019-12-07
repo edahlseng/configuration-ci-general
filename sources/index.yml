@@ -31,7 +31,7 @@ commands:
           root: . # relative to working_directory
           paths: # relative to root
             - .
-  put-directory:
+  put-directory: # Deprecated (use put-path, instead)
     description: Save all files to the workspaces
     parameters:
       path:
@@ -44,11 +44,14 @@ commands:
   put-path:
     description: Save path to the workspace
     parameters:
+      relative-to:
+        type: string
+        default: . # relative to working_directory
       path:
         type: string
     steps:
       - persist_to_workspace:
-          root: . # relative to working_directory
+          root: << parameters.relative-to >>
           paths: # relative to root
             - << parameters.path >>
   put-test-results:
@@ -307,17 +310,81 @@ commands:
               if [[ -d "node_modules" ]]; then
                 echo "Cached node_modules found. Skipping install step."
               else
-                echo "package-lock.json found, but no cached modules found. Installing with \`npm ci\`"
+                echo "package-lock.json found, but no cached modules found. Installing with \`npm ci\`..."
+                echo ""
+
+                echo "Installing Node.js"
+                curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
+                sudo apt-get install -y nodejs
+                echo ""
+
                 npm ci
               fi
             elif [[ -e "package.json" ]]; then
-              echo "No package-lock.json found, but package.json found. Installing with \`npm install\`"
+              echo "No package-lock.json found, but package.json found. Installing with \`npm install\`..."
+              echo ""
+
+              echo "Installing Node.js"
+              curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
+              sudo apt-get install -y nodejs
+              echo ""
+
               npm install
             fi
       - save_cache:
           key: node_modules-{{ arch }}-{{ checksum "package-lock.json" }}
           paths:
             - node_modules
+  install-dependencies-clojure:
+    steps:
+      - run:
+          name: Backing up ~/.m2 directory (if it exists)
+          command: |
+            if [[ -e ~/.m2 ]]; then
+              mv ~/.m2 ~/.m2-temp
+            fi
+      - restore_cache:
+          key: clojure-1.10.1.492-{{ arch }}-{{ checksum "deps.edn" }}
+      - run:
+          name: Installing Clojure dependencies
+          command: |
+            if [[ -e "deps.edn" ]]; then
+              if [[ -d ~/.m2 ]]; then
+                echo "Cached dependencies found. Skipping install step."
+              else
+                echo "deps.edn found, but no cached dependencies found. Installing dependencies..."
+                echo ""
+
+                echo "Installing Clojure"
+                sudo apt-get install openjdk-11-jdk
+                sudo curl -o /tmp/linux-install-clojure.sh https://download.clojure.org/install/linux-install-1.10.1.492.sh
+                sudo chmod +x /tmp/linux-install-clojure.sh
+                sudo /tmp/linux-install-clojure.sh
+                echo ""
+
+                clojure -Spath # In order to make the classpath, resolve-deps has to be called, which downloads dependencies
+              fi
+            fi
+      - save_cache:
+          key: clojure-1.10.1.492-{{ arch }}-{{ checksum "deps.edn" }}
+          paths:
+            - .cpcache
+            - ~/.m2
+      - run:
+          name: Merging backed up ~/.m2 directory into new ~/.m2 directory (if they exist)
+          command: |
+            if [[ -e ~/.m2-temp && ! -e ~/m2 ]]; then
+              mv ~/.m2-temp ~/.m2
+            fi
+
+            if [[ -e ~/.m2-temp && -e ~/.m2 ]]; then
+              echo "Installing merge-directories"
+              wget https://github.com/edahlseng/merge-directories/releases/download/v0.1.0/merge-directories_v0.1.0_linux_amd64.zip
+              unzip merge-directories_v0.1.0_linux_amd64.zip
+              rm merge-directories_v0.1.0_linux_amd64.zip
+              ./merge-directories_v0.1.0_linux_amd64 --mv ~/.m2-temp ~/.m2
+              rm ./merge-directories_v0.1.0_linux_amd64
+            fi
 
 jobs:
   build:
@@ -367,12 +434,19 @@ jobs:
       setup-steps:
         type: steps
         default: []
-    executor: node
+    executor: buildpack-deps
     steps:
       - checkout
       - steps: << parameters.setup-steps >>
+      - install-dependencies-clojure
       - install-dependencies-npm
       - put-all
+      - run:
+          name: Ensuring that remaining workspace directories outside of the project directory have been created
+          command: mkdir -p ~/.m2
+      - put-path:
+          relative-to: "~"
+          path: .m2
   install-dependencies-npm: # Deprecated (use install-dependencies, instead)
     parameters:
       setup-steps:
