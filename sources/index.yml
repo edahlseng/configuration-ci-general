@@ -9,11 +9,11 @@ orbs:
 executors:
   node:
     docker:
-      - image: circleci/node:10.16.3-stretch
+      - image: circleci/node:10.16.3-buster
         user: circleci
   buildpack-deps:
     docker:
-      - image: circleci/buildpack-deps:stretch
+      - image: circleci/buildpack-deps:buster
         user: circleci
   terraform:
     parameters:
