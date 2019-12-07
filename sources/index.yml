@@ -296,6 +296,28 @@ commands:
             docker rm "${containerId}" > /dev/null
 
             exit ${statusCode}
+  install-dependencies-npm:
+    steps:
+      - restore_cache:
+          key: node_modules-{{ arch }}-{{ checksum "package-lock.json" }}
+      - run:
+          name: Installing NPM dependencies
+          command: |
+            if [[ -e "package-lock.json" ]]; then
+              if [[ -d "node_modules" ]]; then
+                echo "Cached node_modules found. Skipping install step."
+              else
+                echo "package-lock.json found, but no cached modules found. Installing with \`npm ci\`"
+                npm ci
+              fi
+            elif [[ -e "package.json" ]]; then
+              echo "No package-lock.json found, but package.json found. Installing with \`npm install\`"
+              npm install
+            fi
+      - save_cache:
+          key: node_modules-{{ arch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
 
 jobs:
   build:
@@ -340,7 +362,7 @@ jobs:
       - checkout
       - steps: << parameters.setup-steps >>
       - put-all
-  install-dependencies-npm:
+  install-dependencies:
     parameters:
       setup-steps:
         type: steps
@@ -349,36 +371,19 @@ jobs:
     steps:
       - checkout
       - steps: << parameters.setup-steps >>
+      - install-dependencies-npm
       - put-all
-      - restore_cache:
-          key: node_modules-{{ arch }}-{{ checksum "package-lock.json" }}
-      - run:
-          name: Installing NPM dependencies
-          command: |
-            if [[ -e "package-lock.json" ]]; then
-              if [[ -d "node_modules" ]]; then
-                echo "Cached node_modules found. Skipping install step."
-              else
-                echo "package-lock.json found, but no cached modules found. Installing with `npm ci`"
-                npm ci
-              fi
-            else
-              echo "No package-lock.json found. Installing with `npm install`"
-              npm install
-            fi
-      - put-directory:
-          path: node_modules
-      - run:
-          name: Checking if cache should be saved
-          command: |
-            if [[ ! -e "package-lock.json" ]]; then
-              echo "No package-lock.json found. Cache will not be saved."
-              circleci-agent step halt
-            fi
-      - save_cache:
-          key: node_modules-{{ arch }}-{{ checksum "package-lock.json" }}
-          paths:
-            - node_modules
+  install-dependencies-npm: # Deprecated (use install-dependencies, instead)
+    parameters:
+      setup-steps:
+        type: steps
+        default: []
+    executor: node
+    steps:
+      - checkout
+      - steps: << parameters.setup-steps >>
+      - install-dependencies-npm
+      - put-all
   lint:
     parameters:
       executor:
