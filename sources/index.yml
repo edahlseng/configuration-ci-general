@@ -464,25 +464,26 @@ jobs:
           name: Linting << parameters.language >>
           command: |
             if which make > /dev/null && [[ -e Makefile ]]; then
-              make lint<<# parameters.language >>-<</ parameters.language >><< parameters.language >>
+              make lint-report<<# parameters.language >>-<</ parameters.language >><< parameters.language >>
               exit 0
             fi
 
             if which npm > /dev/null && [[ -e package.json ]]; then
-              npm run lint<<# parameters.language >>-<</ parameters.language >><< parameters.language >>
+              npm run lint-report<<# parameters.language >>-<</ parameters.language >><< parameters.language >>
               exit 0
             fi
 
             echo "Unable to find a command runner"
             exit 1
-
+      - put-test-results:
+          path: ./linting-results
   lint-circleci-orb:
     executor: circleci-cli/default
     steps:
       - get-workspace
       - orbs/validate:
           orb-path: sources/index.yml
-  lint-commit:
+  lint-commit: # Deprecated (use lint, instead)
     executor: node
     steps:
       - get-workspace
@@ -491,7 +492,7 @@ jobs:
           command: npm run lint-report:commit -- --from origin/master
       - put-test-results:
           path: ./linting-results
-  lint-css:
+  lint-css: # Deprecated (use lint, instead)
     executor: node
     steps:
       - get-workspace
@@ -500,7 +501,7 @@ jobs:
           command: npm run lint-report:css
       - put-test-results:
           path: ./linting-results
-  lint-js:
+  lint-js: # Deprecated (use lint, instead)
     executor: node
     steps:
       - get-workspace
@@ -509,7 +510,7 @@ jobs:
           command: npm run lint-report:js
       - put-test-results:
           path: ./linting-results
-  lint-json:
+  lint-json: # Deprecated (use lint, instead)
     executor: node
     steps:
       - get-workspace
@@ -518,7 +519,7 @@ jobs:
           command: npm run lint-report:json
       - put-test-results:
           path: ./linting-results
-  lint-terraform:
+  lint-terraform: # Deprecated (use lint, instead)
     parameters:
       directory:
         type: string
@@ -544,7 +545,7 @@ jobs:
             fi
 
             terraform fmt -check=true $recursive_arg
-  lint-yaml:
+  lint-yaml: # Deprecated (use lint, instead)
     executor: node
     steps:
       - get-workspace
