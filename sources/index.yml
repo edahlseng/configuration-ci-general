@@ -492,7 +492,13 @@ jobs:
             exit 1
       - put-test-results:
           path: ./linting-results
-  lint-circleci-orb:
+  validate-circleci-orb:
+    executor: circleci-cli/default
+    steps:
+      - get-workspace
+      - orbs/validate:
+          orb-path: sources/index.yml
+  lint-circleci-orb: # Deprecated (use validate-circleci-orb, instead)
     executor: circleci-cli/default
     steps:
       - get-workspace
