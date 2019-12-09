@@ -390,6 +390,40 @@ commands:
             cd << parameters.directory >>
             desiredTerraformVersion=$(cat main.tf | grep --extended-regexp '^\s*required_version\s*=\s*"\s*(=|>=)?\s*[0-9]+\.[0-9]+\.[0-9]+\s*"\s*$' | head | sed -E 's/^.*([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
             tfenv install "${desiredTerraformVersion}" && tfenv use "${desiredTerraformVersion}"
+  create-terraform-plan:
+    parameters:
+      directory:
+        type: string
+      lock-timeout:
+        type: string
+    steps:
+      - run:
+          name: Creating Terraform Plan
+          command: cd << parameters.directory >> && terraform plan -input=false -lock-timeout=<< parameters.lock-timeout >> -out=terraform.plan | tee terraform-output.log
+  apply-terraform-plan:
+    parameters:
+      directory:
+        type: string
+      ignore-missing-plan:
+        type: boolean
+      lock-timeout:
+        type: string
+    steps:
+      - run:
+          name: Applying Terraform Plan
+          command: |
+            cd << parameters.directory >>
+
+            <<# parameters.ignore-missing-plan >>
+              if [[ -e "terraform.plan" ]]; then
+                terraform apply -input=false -lock-timeout=<< parameters.lock-timeout >> "terraform.plan" | tee terraform-output.log
+              else
+                terraform apply -input=false -lock-timeout=<< parameters.lock-timeout >> -auto-approve | tee terraform-output.log
+              fi
+              exit
+            <</ parameters.ignore-missing-plan >>
+
+            terraform apply -input=false -lock-timeout=<< parameters.lock-timeout >> "terraform.plan" | tee terraform-output.log
 
 jobs:
   build:
@@ -891,11 +925,57 @@ jobs:
       - select-or-create-workspace:
           directory: << parameters.directory >>
           workspace-name: << parameters.workspace >>
-      - run:
-          name: Creating Terraform Plan
-          command: cd << parameters.directory >> && terraform plan -input=false -lock-timeout=<< parameters.lock-timeout >> -out=terraform.plan | tee terraform-output.log
+      - create-terraform-plan:
+          directory: << parameters.directory >>
+          lock-timeout: << parameters.lock-timeout >>
       - put-path:
           path: << parameters.directory >>/terraform.plan
+  terraform-run:
+    parameters:
+      lock-timeout:
+        type: string
+        default: "0s"
+      directory:
+        type: string
+      post-plan-steps:
+        description: A list of steps to run after the plan. These steps will always run, even if the Terraform apply will not run (in which case post-steps will also not run).
+        type: steps
+        default: []
+      setup-steps:
+        type: steps
+        default: []
+      should-apply:
+        type: string
+        default: "true"
+      workspace:
+        type: string
+        default: default
+    executor:
+      name: tfenv
+    steps:
+      - get-workspace
+      - steps: << parameters.setup-steps >>
+      - install-required-terraform-version:
+          directory: << parameters.directory >>
+      - run:
+          name: Initializing Terraform
+          command: cd << parameters.directory >> && terraform init -input=false
+      - select-or-create-workspace:
+          directory: << parameters.directory >>
+          workspace-name: << parameters.workspace >>
+      - create-terraform-plan:
+          directory: << parameters.directory >>
+          lock-timeout: << parameters.lock-timeout >>
+      - run:
+          name: Checking if apply should run
+          command: |
+            if ! << parameters.should-apply >>; then
+              circleci-agent step halt
+            fi
+      - apply-terraform-plan:
+          directory: << parameters.directory >>
+          ignore-missing-plan: false
+          lock-timeout: << parameters.lock-timeout >>
   terraform-apply:
     parameters:
       directory:
@@ -927,21 +1007,10 @@ jobs:
       - select-or-create-workspace:
           directory: << parameters.directory >>
           workspace-name: << parameters.workspace >>
-      - run:
-          name: Applying Terraform Plan
-          command: |
-            cd << parameters.directory >>
-
-            <<# parameters.ignore-missing-plan >>
-              if [[ -e "terraform.plan" ]]; then
-                terraform apply -input=false -lock-timeout=<< parameters.lock-timeout >> "terraform.plan" | tee terraform-output.log
-              else
-                terraform apply -input=false -lock-timeout=<< parameters.lock-timeout >> -auto-approve | tee terraform-output.log
-              fi
-              exit
-            <</ parameters.ignore-missing-plan >>
-
-            terraform apply -input=false -lock-timeout=<< parameters.lock-timeout >> "terraform.plan" | tee terraform-output.log
+      - apply-terraform-plan:
+          directory: << parameters.directory >>
+          ignore-missing-plan: << parameters.ignore-missing-plan >>
+          lock-timeout: << parameters.lock-timeout >>
   validate-js:
     parameters:
       setup-steps:
