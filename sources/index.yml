@@ -22,6 +22,10 @@ executors:
     docker:
       - image: edahlseng/circleci-terraform:<< parameters.tag >>-stretch
         user: circleci
+  tfenv:
+    docker:
+      - image: edahlseng/circleci-tfenv:buster
+        user: circleci
 
 commands:
   put-all:
@@ -375,6 +379,17 @@ commands:
               ./merge-directories_v0.1.0_linux_amd64 --mv ~/.m2-temp ~/.m2
               rm ./merge-directories_v0.1.0_linux_amd64
             fi
+  install-required-terraform-version:
+    parameters:
+      directory:
+        type: string
+    steps:
+      - run:
+          name: Installing required Terraform version
+          command: |
+            cd << parameters.directory >>
+            desiredTerraformVersion=$(cat main.tf | grep --extended-regexp '^\s*required_version\s*=\s*"\s*(=|>=)?\s*[0-9]+\.[0-9]+\.[0-9]+\s*"\s*$' | head | sed -E 's/^.*([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
+            tfenv install "${desiredTerraformVersion}" && tfenv use "${desiredTerraformVersion}"
 
 jobs:
   build:
@@ -846,7 +861,7 @@ jobs:
     parameters:
       directory:
         type: string
-      terraform-image-tag:
+      terraform-image-tag: # Unused and deprecated, but included to provide backwards compatibility
         type: string
       setup-steps:
         type: steps
@@ -858,11 +873,12 @@ jobs:
         type: string
         default: "0s"
     executor:
-      name: terraform
-      tag: << parameters.terraform-image-tag >>
+      name: tfenv
     steps:
       - get-workspace
       - steps: << parameters.setup-steps >>
+      - install-required-terraform-version:
+          directory: << parameters.directory >>
       - run:
           name: Initializing Terraform
           command: cd << parameters.directory >> && terraform init -input=false
@@ -878,7 +894,7 @@ jobs:
     parameters:
       directory:
         type: string
-      terraform-image-tag:
+      terraform-image-tag: # Unused and deprecated, but included to provide backwards compatibility
         type: string
       setup-steps:
         type: steps
@@ -893,11 +909,12 @@ jobs:
         type: string
         default: "0s"
     executor:
-      name: terraform
-      tag: << parameters.terraform-image-tag >>
+      name: tfenv
     steps:
       - get-workspace
       - steps: << parameters.setup-steps >>
+      - install-required-terraform-version:
+          directory: << parameters.directory >>
       - run:
           name: Initializing Terraform
           command: cd << parameters.directory >> && terraform init -input=false
@@ -935,7 +952,7 @@ jobs:
     parameters:
       directories:
         type: string
-      terraform-image-tag:
+      terraform-image-tag: # Unused and deprecated, but included to provide backwards compatibility
         type: string
       setup-steps:
         type: steps
@@ -944,8 +961,7 @@ jobs:
         type: boolean
         default: true
     executor:
-      name: terraform
-      tag: << parameters.terraform-image-tag >>
+      name: tfenv
     steps:
       - get-workspace
       - steps: << parameters.setup-steps >>
@@ -956,6 +972,10 @@ jobs:
 
             for directory in "${directories[@]}"; do
               cd ${directory}
+
+              desiredTerraformVersion=$(cat main.tf | grep --extended-regexp '^\s*required_version\s*=\s*"\s*(=|>=)?\s*[0-9]+\.[0-9]+\.[0-9]+\s*"\s*$' | head | sed -E 's/^.*([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
+              tfenv install "${desiredTerraformVersion}" && tfenv use "${desiredTerraformVersion}"
+
               terraform init -input=false
               <<# parameters.run-validate-after-init >>
                 terraform validate
@@ -995,7 +1015,7 @@ jobs:
     parameters:
       directory:
         type: string
-      terraform-image-tag:
+      terraform-image-tag: # Unused and deprecated, but included to provide backwards compatibility
         type: string
       github-access-token:
         type: string
@@ -1008,11 +1028,12 @@ jobs:
         type: string
         default: "0s"
     executor:
-      name: terraform
-      tag: << parameters.terraform-image-tag >>
+      name: tfenv
     steps:
       - get-workspace
       - steps: << parameters.setup-steps >>
+      - install-required-terraform-version:
+          directory: << parameters.directory >>
       - run:
           name: Finding and destroying outdated PR deployments
           command: |
@@ -1065,7 +1086,7 @@ jobs:
     parameters:
       directory:
         type: string
-      terraform-image-tag:
+      terraform-image-tag: # Unused and deprecated, but included to provide backwards compatibility
         type: string
       github-access-token:
         type: string
@@ -1076,11 +1097,12 @@ jobs:
         type: string
         default: "0s"
     executor:
-      name: terraform
-      tag: << parameters.terraform-image-tag >>
+      name: tfenv
     steps:
       - get-workspace
       - steps: << parameters.setup-steps >>
+      - install-required-terraform-version:
+          directory: << parameters.directory >>
       - run:
           name: Finding and destroying outdated PR deployments
           command: |
