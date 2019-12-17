@@ -148,7 +148,7 @@ commands:
       - run:
           name: Configuring AWS profile
           command: |
-            mkdir ~/.aws
+            mkdir -p ~/.aws
 
             cat \<<EOF > ~/.aws/credentials
             # AWS Credentials
