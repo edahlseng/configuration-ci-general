@@ -131,29 +131,36 @@ commands:
       - put-directory:
           path: .git
   configure-aws-profile:
+    parameters:
+      aws-role-variable-name:
+        type: string
+        default: AWS_ROLE
+      aws-access-key-id-variable-name:
+        type: string
+        default: AWS_ACCESS_KEY_ID
+      aws-secret-access-key-variable-name:
+        type: string
+        default: AWS_SECRET_ACCESS_KEY
+      profile-name:
+        type: string
+        default: infrastructure
     steps:
       - run:
           name: Configuring AWS profile
           command: |
             mkdir ~/.aws
 
-            cat \<<EOF >> ~/.aws/config
-            # AWS Config
-            [profile infrastructure]
-            role_arn = ${AWS_CI_ROLE}
-            source_profile = default
-            EOF
-
             cat \<<EOF > ~/.aws/credentials
             # AWS Credentials
-            [default]
-            aws_access_key_id = ${AWS_ACCESS_KEY_ID}
-            aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}
+            [<< parameters.profile-name >>]
+            aws_access_key_id = ${<< parameters.aws-access-key-id-variable-name >>}
+            aws_secret_access_key = ${<< parameters.aws-secret-access-key-variable-name >>}
+            role_arn = ${<< parameters.aws-role-variable-name >>}
             EOF
 
-            echo 'unset AWS_ACCESS_KEY_ID' >> ${BASH_ENV}
-            echo 'unset AWS_SECRET_ACCESS_KEY' >> ${BASH_ENV}
-            echo 'export AWS_PROFILE="infrastructure"' >> ${BASH_ENV}
+            echo 'unset << parameters.aws-access-key-id-variable-name >>' >> ${BASH_ENV}
+            echo 'unset << parameters.aws-secret-access-key-variable-name >>' >> ${BASH_ENV}
+            echo 'export AWS_PROFILE="<< parameters.profile-name >>"' >> ${BASH_ENV}
             echo 'export AWS_SDK_LOAD_CONFIG=1' >> ${BASH_ENV}
   login-ecr:
     parameters:
