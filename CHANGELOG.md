@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.27.1"></a>
+## [1.27.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.27.0...v1.27.1) (2019-12-17)
+
+
+### Bug Fixes
+
+* Append AWS credentials rather than overwriting ([4a7a5a6](https://github.com/edahlseng/configuration-ci-general/commit/4a7a5a6))
+* Handle ~/.aws directory already exists in configure-aws-profile ([0474f9a](https://github.com/edahlseng/configuration-ci-general/commit/0474f9a))
+* Specify AWS credentials correctly in configure-aws-profile command ([93f82c4](https://github.com/edahlseng/configuration-ci-general/commit/93f82c4))
+
+
+
 <a name="1.27.0"></a>
 # [1.27.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.26.0...v1.27.0) (2019-12-17)
 
