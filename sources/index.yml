@@ -152,9 +152,13 @@ commands:
 
             cat \<<EOF > ~/.aws/credentials
             # AWS Credentials
-            [<< parameters.profile-name >>]
+
+            [<< parameters.profile-name >>-credentials]
             aws_access_key_id = ${<< parameters.aws-access-key-id-variable-name >>}
             aws_secret_access_key = ${<< parameters.aws-secret-access-key-variable-name >>}
+
+            [<< parameters.profile-name >>]
+            source_profile = << parameters.profile-name >>-credentials
             role_arn = ${<< parameters.aws-role-variable-name >>}
             EOF
 
