@@ -150,9 +150,7 @@ commands:
           command: |
             mkdir -p ~/.aws
 
-            cat \<<EOF > ~/.aws/credentials
-            # AWS Credentials
-
+            cat \<<EOF >> ~/.aws/credentials
             [<< parameters.profile-name >>-credentials]
             aws_access_key_id = ${<< parameters.aws-access-key-id-variable-name >>}
             aws_secret_access_key = ${<< parameters.aws-secret-access-key-variable-name >>}
@@ -160,6 +158,7 @@ commands:
             [<< parameters.profile-name >>]
             source_profile = << parameters.profile-name >>-credentials
             role_arn = ${<< parameters.aws-role-variable-name >>}
+
             EOF
 
             echo 'unset << parameters.aws-access-key-id-variable-name >>' >> ${BASH_ENV}
