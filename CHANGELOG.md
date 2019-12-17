@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.27.0"></a>
+# [1.27.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.26.0...v1.27.0) (2019-12-17)
+
+
+### Features
+
+* Add parameters to configure-aws-profile command ([c9ba324](https://github.com/edahlseng/configuration-ci-general/commit/c9ba324))
+
+
+
 <a name="1.26.0"></a>
 # [1.26.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.25.0...v1.26.0) (2019-11-27)
 
