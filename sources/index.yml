@@ -424,6 +424,18 @@ commands:
             <</ parameters.ignore-missing-plan >>
 
             terraform apply -input=false -lock-timeout=<< parameters.lock-timeout >> "terraform.plan" | tee terraform-output.log
+  run-pre-init-script:
+    description: Runs a pre-init.sh script, primarily used for setting up third-party Terraform providers
+    parameters:
+      directory:
+        type: string
+    steps:
+      - run:
+          name: Running pre-init script
+          command: |
+            if [[ -e << parameters.directory >>/pre-init.sh ]]; then
+              << parameters.directory >>/pre-init.sh
+            fi
 
 jobs:
   build:
