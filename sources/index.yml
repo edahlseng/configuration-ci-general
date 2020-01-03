@@ -436,6 +436,19 @@ commands:
             if [[ -e << parameters.directory >>/pre-init.sh ]]; then
               << parameters.directory >>/pre-init.sh
             fi
+  set-up-environment-variables-from-suffix:
+    description: Sets up environment variables from source variables that have a specified suffix
+    parameters:
+      suffix:
+        type: string
+    steps:
+      - run:
+          name: Setting up environment variables
+          command: |
+            for variable in $(compgen -e | grep -E "<< parameters.suffix >>$"); do
+              echo "Creating ${variable%<< parameters.suffix >>} variable, from ${variable}"
+              echo "export ${variable%<< parameters.suffix >>}=\"${!variable}\"" >> ${BASH_ENV}
+            done
 
 jobs:
   build:
