@@ -470,6 +470,17 @@ commands:
       - run:
           name: Setting up Terraform variables
           command: echo "<< parameters.variables >>" | tee -a << parameters.directory >>/terraform.tfvars
+  log-in-to-docker-hub:
+    description: Logs the current Docker daemon into Docker Hub
+    parameters:
+      username:
+        type: string
+      password:
+        type: string
+    steps:
+      - run:
+          name: Logging in to Docker Hub
+          command: echo "<< parameters.password >>" | docker login -u "<< parameters.username >>" --password-stdin
 
 jobs:
   build:
