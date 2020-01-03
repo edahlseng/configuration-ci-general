@@ -459,6 +459,17 @@ commands:
               echo "Creating ${variable%<< parameters.suffix >>} variable, from ${variable}"
               echo "export ${variable%<< parameters.suffix >>}=\"${!variable}\"" >> ${BASH_ENV}
             done
+  set-up-terraform-variables:
+    description: Saves Terraform variables to a terraform.tfvars file. This command does not do much other than allow for easier to understand syntax in a .circleci/config.yml file.
+    parameters:
+      directory:
+        type: string
+      variables:
+        type: string
+    steps:
+      - run:
+          name: Setting up Terraform variables
+          command: echo "<< parameters.variables >>" | tee -a << parameters.directory >>/terraform.tfvars
 
 jobs:
   build:
