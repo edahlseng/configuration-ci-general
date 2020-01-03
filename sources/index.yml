@@ -481,6 +481,19 @@ commands:
       - run:
           name: Logging in to Docker Hub
           command: echo "<< parameters.password >>" | docker login -u "<< parameters.username >>" --password-stdin
+  halt:
+    description: Halts the job if the specified condition is true
+    parameters:
+      if:
+        type: string
+    steps:
+      - run:
+          name: Ensuring job should continue
+          command: |
+            if << parameters.if >>; then
+              echo "Condition not met, halting"
+              circleci-agent step halt
+            fi
 
 jobs:
   build:
