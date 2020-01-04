@@ -511,6 +511,20 @@ commands:
               echo "Condition not met, halting"
               circleci-agent step halt
             fi
+  tag-current-commit:
+    description: Creates a Git tag for the current commit, and pushes that tag to the Git remote
+    parameters:
+      tag:
+        type: string
+    steps:
+      - run:
+          name: Creating Git tag
+          command: git tag "<< parameters.tag >>"
+      - put-directory:
+          path: .git
+      - run:
+          name: Pushing tag to Git remote
+          command: git push --tags
 
 jobs:
   build:
