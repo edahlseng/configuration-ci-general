@@ -236,15 +236,24 @@ commands:
           command: |
             prNumber="${CIRCLE_PR_NUMBER:-${CIRCLE_PULL_REQUEST##*/}}"
 
-            curl -X POST \
+            statusCode=$(curl -X POST \
               -H 'Accept: application/vnd.github.v3+json' \
               -H "Authorization: token << parameters.github-access-token >>" \
+              --output curl.log \
+              --write-out "%{http_code}" \
               "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/issues/${prNumber}/comments" \
               --data @- \<<-EOF
                 {
                   "body": "<< parameters.comment >>"
                 }
             EOF
+            )
+
+            cat curl.log
+
+            if [[ "${statusCode}" -lt "200" ]] || [[ "${statusCode}" -gt "299" ]]; then
+              exit 1
+            fi
   set-up-npm-authentication:
     parameters:
       npm-authentication-token:
