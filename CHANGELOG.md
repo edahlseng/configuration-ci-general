@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.28.0"></a>
+# [1.28.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.27.1...v1.28.0) (2020-01-05)
+
+
+### Bug Fixes
+
+* Error on non-success status code in post-pr-comment command ([4436c7d](https://github.com/edahlseng/configuration-ci-general/commit/4436c7d))
+* Put linting results at the end of the lint job ([15b3ca7](https://github.com/edahlseng/configuration-ci-general/commit/15b3ca7))
+
+
+### Features
+
+* Add halt command ([766d773](https://github.com/edahlseng/configuration-ci-general/commit/766d773))
+* Add install-dependencies job ([d81192b](https://github.com/edahlseng/configuration-ci-general/commit/d81192b))
+* Add install-dependencies-clojure command ([08cf23d](https://github.com/edahlseng/configuration-ci-general/commit/08cf23d))
+* Add install-terraform-version command ([4adb1bb](https://github.com/edahlseng/configuration-ci-general/commit/4adb1bb))
+* Add log-in-to-docker-hub command ([85cfccb](https://github.com/edahlseng/configuration-ci-general/commit/85cfccb))
+* Add run-pre-init-script command ([9db0ad3](https://github.com/edahlseng/configuration-ci-general/commit/9db0ad3))
+* Add set-up-environment-variables-from-suffix command ([263d66a](https://github.com/edahlseng/configuration-ci-general/commit/263d66a))
+* Add set-up-terraform-variables command ([b4f05b3](https://github.com/edahlseng/configuration-ci-general/commit/b4f05b3))
+* Add tag-current-commit command ([dafaf4f](https://github.com/edahlseng/configuration-ci-general/commit/dafaf4f))
+* Add terraform-run job ([f3cf99e](https://github.com/edahlseng/configuration-ci-general/commit/f3cf99e))
+* Add tfenv executor ([9e9e7aa](https://github.com/edahlseng/configuration-ci-general/commit/9e9e7aa))
+* Add validate-circleci-orb job ([755682e](https://github.com/edahlseng/configuration-ci-general/commit/755682e))
+* Update Docker images from stretch to buster ([38a61af](https://github.com/edahlseng/configuration-ci-general/commit/38a61af))
+
+
+
 <a name="1.27.1"></a>
 ## [1.27.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.27.0...v1.27.1) (2019-12-17)
 
