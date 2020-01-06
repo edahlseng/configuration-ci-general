@@ -1004,6 +1004,7 @@ jobs:
         type: string
       terraform-image-tag: # Unused and deprecated, but included to provide backwards compatibility
         type: string
+        default: ""
       setup-steps:
         type: steps
         default: []
@@ -1083,6 +1084,7 @@ jobs:
         type: string
       terraform-image-tag: # Unused and deprecated, but included to provide backwards compatibility
         type: string
+        default: ""
       setup-steps:
         type: steps
         default: []
@@ -1130,6 +1132,7 @@ jobs:
         type: string
       terraform-image-tag: # Unused and deprecated, but included to provide backwards compatibility
         type: string
+        default: ""
       setup-steps:
         type: steps
         default: []
@@ -1193,6 +1196,7 @@ jobs:
         type: string
       terraform-image-tag: # Unused and deprecated, but included to provide backwards compatibility
         type: string
+        default: ""
       github-access-token:
         type: string
       setup-steps:
@@ -1264,6 +1268,7 @@ jobs:
         type: string
       terraform-image-tag: # Unused and deprecated, but included to provide backwards compatibility
         type: string
+        default: ""
       github-access-token:
         type: string
       setup-steps:
