@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.29.1"></a>
+## [1.29.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.29.0...v1.29.1) (2020-03-06)
+
+
+### Bug Fixes
+
+* Install Terraform before running setup-steps ([66e4965](https://github.com/edahlseng/configuration-ci-general/commit/66e4965))
+
+
+
 <a name="1.29.0"></a>
 # [1.29.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.28.0...v1.29.0) (2020-01-06)
 
