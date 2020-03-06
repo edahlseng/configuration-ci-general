@@ -1018,9 +1018,9 @@ jobs:
       name: tfenv
     steps:
       - get-workspace
-      - steps: << parameters.setup-steps >>
       - install-required-terraform-version:
           directory: << parameters.directory >>
+      - steps: << parameters.setup-steps >>
       - run:
           name: Initializing Terraform
           command: cd << parameters.directory >> && terraform init -input=false
@@ -1056,9 +1056,9 @@ jobs:
       name: tfenv
     steps:
       - get-workspace
-      - steps: << parameters.setup-steps >>
       - install-required-terraform-version:
           directory: << parameters.directory >>
+      - steps: << parameters.setup-steps >>
       - run:
           name: Initializing Terraform
           command: cd << parameters.directory >> && terraform init -input=false
@@ -1101,9 +1101,9 @@ jobs:
       name: tfenv
     steps:
       - get-workspace
-      - steps: << parameters.setup-steps >>
       - install-required-terraform-version:
           directory: << parameters.directory >>
+      - steps: << parameters.setup-steps >>
       - run:
           name: Initializing Terraform
           command: cd << parameters.directory >> && terraform init -input=false
