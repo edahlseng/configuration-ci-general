@@ -614,12 +614,12 @@ jobs:
           name: Linting << parameters.language >>
           command: |
             if which make > /dev/null && [[ -e Makefile ]]; then
-              make lint-report<<# parameters.language >>-<</ parameters.language >><< parameters.language >>
+              make lint<<# parameters.language >>-<</ parameters.language >><< parameters.language >>
               exit 0
             fi
 
             if which npm > /dev/null && [[ -e package.json ]]; then
-              npm run lint-report<<# parameters.language >>-<</ parameters.language >><< parameters.language >>
+              npm run lint<<# parameters.language >>-<</ parameters.language >><< parameters.language >>
               exit 0
             fi
 
