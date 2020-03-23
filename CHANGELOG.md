@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.30.0"></a>
+# [1.30.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.29.1...v1.30.0) (2020-03-23)
+
+
+### Bug Fixes
+
+* Remove assumption on lint job including -report suffix ([f0a21ad](https://github.com/edahlseng/configuration-ci-general/commit/f0a21ad))
+
+
+### Features
+
+* Add variant parameter to test job ([b227287](https://github.com/edahlseng/configuration-ci-general/commit/b227287))
+
+
+
 <a name="1.29.1"></a>
 ## [1.29.1](https://github.com/edahlseng/configuration-ci-general/compare/v1.29.0...v1.29.1) (2020-03-06)
 
