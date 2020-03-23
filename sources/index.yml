@@ -715,6 +715,10 @@ jobs:
       executor:
         type: executor
         default: buildpack-deps
+      variant:
+        type: string
+        description: The variant to test
+        default: ""
     executor: << parameters.executor >>
     steps:
       - get-workspace
@@ -722,12 +726,12 @@ jobs:
           name: Running tests
           command: |
             if which make > /dev/null && [[ -e Makefile ]]; then
-              make test-report
+              make test<<# parameters.variant >>-<</ parameters.variant >><< parameters.variant >>
               exit 0
             fi
 
             if which npm > /dev/null && [[ -e package.json ]]; then
-              npm run test-report
+              npm run test<<# parameters.variant >>-<</ parameters.variant >><< parameters.variant >>
               exit 0
             fi
 
