@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.31.0"></a>
+# [1.31.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.30.0...v1.31.0) (2020-05-07)
+
+
+### Bug Fixes
+
+* Use tfenv executor for the `lint-terraform` job ([2c6ed4f](https://github.com/edahlseng/configuration-ci-general/commit/2c6ed4f))
+
+
+### Features
+
+* Add `get-eks-token` command ([9b88809](https://github.com/edahlseng/configuration-ci-general/commit/9b88809))
+
+
+
 <a name="1.30.0"></a>
 # [1.30.0](https://github.com/edahlseng/configuration-ci-general/compare/v1.29.1...v1.30.0) (2020-03-23)
 

@@ -1,7 +1,7 @@
 {
   "name": "configuration-ci-general",
   "private": true,
-  "version": "1.30.0",
+  "version": "1.31.0",
   "description": "General Continuous Integration Configuration ------------------------------------",
   "main": "index.js",
   "scripts": {
