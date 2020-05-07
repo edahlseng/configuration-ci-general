@@ -525,6 +525,29 @@ commands:
       - run:
           name: Pushing tag to Git remote
           command: git push --tags
+  get-eks-token:
+    description: Generates EKS authentication token, adding it to the list of exported variables for subsequent commands
+    parameters:
+      cluster-name:
+        type: string
+        default: eks-cluster
+      environment-variable-name:
+        type: string
+        default: KUBE_TOKEN
+      region:
+        type: string
+        default: us-east-1
+    steps:
+      - run:
+          name: Getting authentication token
+          command: |
+            if ! which aws > /dev/null; then
+              sudo apt-get update && sudo apt-get install -y python3-pip
+              sudo pip3 install awscli
+            fi
+
+            eksAuthToken=$(aws eks get-token --region << parameters.region >> --cluster-name << parameters.cluster-name >> | jq -r .status.token)
+            echo "export << parameters.environment-variable-name >>="${eksAuthToken}"" >> ${BASH_ENV}
 
 jobs:
   build:
