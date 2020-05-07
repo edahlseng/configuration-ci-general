@@ -708,9 +708,7 @@ jobs:
         default: true
       terraform-image-tag:
         type: string
-    executor:
-      name: terraform
-      tag: << parameters.terraform-image-tag >>
+    executor: tfenv
     steps:
       - get-workspace
       - run:
@@ -723,6 +721,7 @@ jobs:
                recursive_arg="-recursive"
             fi
 
+            tfenv install << parameters.terraform-image-tag >>
             terraform fmt -check=true $recursive_arg
   lint-yaml: # Deprecated (use lint, instead)
     executor: node
