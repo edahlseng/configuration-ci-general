@@ -28,7 +28,7 @@
   "dependencies": {},
   "devDependencies": {
     "@eric.dahlseng/linter-configuration": "^0.3.0",
-    "standard-version": "^4.4.0"
+    "standard-version": "^8.0.1"
   },
   "standard-version": {
     "skip": {
