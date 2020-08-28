@@ -3,13 +3,13 @@ version: 2.1
 description: General purpose continuous integration configuration
 
 orbs:
-  circleci-cli: circleci/circleci-cli@0.1.1
-  orbs: circleci/orb-tools@2.0.2
+  circleci-cli: circleci/circleci-cli@0.1.8
+  orbs: circleci/orb-tools@10.0.0
 
 executors:
   node:
     docker:
-      - image: circleci/node:10.16.3-buster
+      - image: circleci/node:10.22-buster
         user: circleci
   buildpack-deps:
     docker:
@@ -407,7 +407,7 @@ commands:
           name: Installing required Terraform version
           command: |
             cd << parameters.directory >>
-            desiredTerraformVersion=$(cat main.tf | grep --extended-regexp '^\s*required_version\s*=\s*"\s*(=|>=)?\s*[0-9]+\.[0-9]+\.[0-9]+\s*"\s*$' | head | sed -E 's/^.*([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
+            desiredTerraformVersion=$(cat versions.tf | grep --extended-regexp '^\s*required_version\s*=\s*"\s*(=|>=)?\s*[0-9]+\.[0-9]+\.[0-9]+\s*"\s*$' | head | sed -E 's/^.*([0-9]+\.[0-9]+\.[0-9]+).*$/\1/')
             tfenv install "${desiredTerraformVersion}" && tfenv use "${desiredTerraformVersion}"
   install-terraform-version:
     parameters:

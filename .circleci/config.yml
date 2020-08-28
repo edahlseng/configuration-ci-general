@@ -1,9 +1,9 @@
 version: 2.1
 
 orbs:
-  circleci-cli: circleci/circleci-cli@0.1.1
-  orbs: circleci/orb-tools@2.0.2
-  general: edahlseng/general@1.24.0
+  circleci-cli: circleci/circleci-cli@0.1.8
+  orbs: circleci/orb-tools@10.0.0
+  general: zeitler/general@0.0.2
 
 workflows:
   main:
@@ -23,7 +23,7 @@ workflows:
             - general/install-dependencies-npm
       - general/publish-circleci-dev:
           context: Orb Publishing
-          orb-ref: edahlseng/general
+          orb-ref: zeitler/general
           token-variable: $ORB_PUBLISHING_TOKEN
           requires:
             - general/lint-commit
@@ -35,8 +35,8 @@ workflows:
               ignore: master
       - general/create-release-pr:
           context: Release Bot
-          git-ssh-fingerprint: da:75:0b:32:cf:ea:fe:8f:c6:0e:6a:82:6c:fb:c4:78
-          git-user-email: edahlseng@users.noreply.github.com
+          git-ssh-fingerprint: d6:86:49:e8:0c:7d:11:a0:ff:3e:ac:75:b0:15:8d:d8
+          git-user-email: 18561582+bzeitler69@users.noreply.github.com
           git-user-name: "Release Bot"
           github-access-token: $RELEASE_BOT_GITHUB_TOKEN
           requires:
@@ -49,10 +49,10 @@ workflows:
               only: master
       - general/tag-and-publish-circleci:
           context: Orb Publishing
-          git-ssh-fingerprint: da:75:0b:32:cf:ea:fe:8f:c6:0e:6a:82:6c:fb:c4:78
-          git-user-email: edahlseng@users.noreply.github.com
+          git-ssh-fingerprint: d6:86:49:e8:0c:7d:11:a0:ff:3e:ac:75:b0:15:8d:d8
+          git-user-email: 18561582+bzeitler69@users.noreply.github.com
           git-user-name: "Release Bot"
-          orb-ref: edahlseng/general
+          orb-ref: zeitler/general
           token-variable: $ORB_PUBLISHING_TOKEN
           requires:
             - general/lint-commit
