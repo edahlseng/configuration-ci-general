@@ -12,7 +12,7 @@ Reference the orb within a CircleCI configuration file:
 version: 2.1
 
 orbs:
-  general: edahlseng/general@X.Y.Z
+  general: shapertools/general@X.Y.Z
 ```
 
 See the releases tab for the latest published version number.
@@ -20,7 +20,7 @@ See the releases tab for the latest published version number.
 Documentation
 -------------
 
-Full documentation for this orb can be found in the CircleCI Orbs Registry: [edahlseng/general documentation](https://circleci.com/orbs/registry/orb/edahlseng/general).
+Full documentation for this orb can be found in the CircleCI Orbs Registry: [shapertools/general documentation](https://circleci.com/orbs/registry/orb/shapertools/general).
 
 Motivation
 ----------
@@ -56,4 +56,4 @@ The best release process is one that is automated, removing the barrier to relea
 
 ### Miscellaneous Configuration
 
-Many projects share similar workflows related to linting, building, running tests, etc. The rest of this orb contains configuration aimed at reducing the boilerplate needed when running these common steps across different projects. Note that this configuration is very opinionated, reflecting the way that my other projects are set up. See the [full documentation for this orb](https://circleci.com/orbs/registry/orb/edahlseng/general) for more information on this miscellaneous configuration.
+Many projects share similar workflows related to linting, building, running tests, etc. The rest of this orb contains configuration aimed at reducing the boilerplate needed when running these common steps across different projects. Note that this configuration is very opinionated, reflecting the way that my other projects are set up. See the [full documentation for this orb](https://circleci.com/orbs/registry/orb/shapertools/general) for more information on this miscellaneous configuration.

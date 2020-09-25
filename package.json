@@ -1,7 +1,7 @@
 {
   "name": "configuration-ci-general",
   "private": true,
-  "version": "1.31.0",
+  "version": "0.0.1",
   "description": "General Continuous Integration Configuration ------------------------------------",
   "main": "index.js",
   "scripts": {
@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/edahlseng/configuration-ci-general.git"
+    "url": "git+https://github.com/shapertools/configuration-ci-general.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/edahlseng/configuration-ci-general/issues"
+    "url": "https://github.com/shapertools/configuration-ci-general/issues"
   },
-  "homepage": "https://github.com/edahlseng/configuration-ci-general#readme",
+  "homepage": "https://github.com/shapertools/configuration-ci-general#readme",
   "dependencies": {},
   "devDependencies": {
     "@eric.dahlseng/linter-configuration": "^0.3.0",
