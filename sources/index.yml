@@ -79,7 +79,7 @@ commands:
       - run:
           name: Ensuring commit is a release commit
           command: |
-            if [[ ! $(git log --format=%B -n 1 ${CIRCLE_SHA1} | head -n 1) =~ chore\(release\): ]]; then
+            if [[ ! $(git log --format=%b -n 1 ${CIRCLE_SHA1}) =~ "New Release:" ]]; then
               echo "Not a release commit, halting"
               circleci-agent step halt
             fi
@@ -89,7 +89,7 @@ commands:
       - run:
           name: Ensuring commit is not a release commit
           command: |
-            if [[ $(git log --format=%B -n 1 ${CIRCLE_SHA1} | head -n 1) =~ chore\(release\): ]]; then
+            if [[ $(git log --format=%b -n 1 ${CIRCLE_SHA1}) =~ "New Release:" ]]; then
               echo "Release commit, halting"
               circleci-agent step halt
             fi
@@ -128,7 +128,7 @@ commands:
       - run:
           name: Creating Git tag
           command: |
-            versionTag=$(git log --format=%B -n 1 ${CIRCLE_SHA1} | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
+            versionTag=$(git log --format=%b -n 1 ${CIRCLE_SHA1} | sed -r 's/New Release: //')
 
             echo "Tagging commit"
             git tag "${versionTag}"
@@ -780,7 +780,7 @@ jobs:
       - run:
           name: Creating release
           command: |
-            versionTag=$(git log --format=%B -n 1 ${CIRCLE_SHA1} | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
+            versionTag=$(git log --format=%b -n 1 ${CIRCLE_SHA1} | sed -r 's/New Release: //')
 
             # Pull details from changelog
 
@@ -874,7 +874,7 @@ jobs:
       - run:
           name: Creating or updating pull request
           command: |
-            versionTag=$(git log --format=%B -n 1 HEAD | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
+            versionTag=$(git log --format=%b -n 1 HEAD | sed -r 's/New Release: //')
             echo "Version tag is: ${versionTag}"
 
             # ------------------------------------------------------------------
@@ -1000,7 +1000,7 @@ jobs:
       - orbs/publish:
           orb-path: sources/index.yml
           orb-ref: >-
-            << parameters.orb-ref >>@$(git log --format=%B -n 1 ${CIRCLE_SHA1} | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/\1/')
+            << parameters.orb-ref >>@$(git log --format=%b -n 1 ${CIRCLE_SHA1} | sed -r 's/New Release: v//')
           token-variable: << parameters.token-variable >>
   tag-and-publish-npm:
     executor: node
