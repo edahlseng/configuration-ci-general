@@ -874,7 +874,7 @@ jobs:
       - run:
           name: Creating or updating pull request
           command: |
-            versionTag=$(git log --format=%b -n 1 HEAD | sed -r 's/New Release: //')
+            versionTag=$(git log --format=%B -n 1 HEAD | head -n 1 | sed -r 's/chore\(release\): ([0-9]+\.[0-9]+\.[0-9]+)/v\1/')
             echo "Version tag is: ${versionTag}"
 
             # ------------------------------------------------------------------
