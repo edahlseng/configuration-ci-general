@@ -743,24 +743,33 @@ jobs:
         type: string
         description: The variant to test
         default: ""
+      setup-steps:
+        type: steps
+        default: []
+      error-if-missing:
+        type: boolean
+        default: true
+      make-target:
+        type: string
+        default: "test"
     executor: << parameters.executor >>
     steps:
       - get-workspace
+      - steps: << parameters.setup-steps >>
       - run:
           name: Running tests
           command: |
-            if which make > /dev/null && [[ -e Makefile ]]; then
-              make test<<# parameters.variant >>-<</ parameters.variant >><< parameters.variant >>
-              exit 0
+            if which make > /dev/null && [[ -e Makefile ]] && make -n <<parameters.make-target>>; then
+              make <<parameters.make-target>>
+            else
+              if <<parameters.error-if-missing>>; then
+                echo "Unable to find a command runner"
+                exit 1
+              else
+                echo "No makefile with <<parameters.make-target>> target found. Assuming there's no tests to run"
+                exit 0
+              fi
             fi
-
-            if which npm > /dev/null && [[ -e package.json ]]; then
-              npm run test<<# parameters.variant >>-<</ parameters.variant >><< parameters.variant >>
-              exit 0
-            fi
-
-            echo "Unable to find a command runner"
-            exit 1
       - put-test-results:
           path: ./test-results
       - store_artifacts:
