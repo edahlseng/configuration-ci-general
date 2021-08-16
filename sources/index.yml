@@ -181,7 +181,7 @@ commands:
           name: Logging in to ECR
           command: |
             if ! which aws > /dev/null; then
-              sudo apt-get update && sudo apt-get install -y python3-pip
+              sudo apt-get update --allow-releaseinfo-change && sudo apt-get install -y python3-pip
               sudo pip3 install awscli
             fi
 
@@ -544,7 +544,7 @@ commands:
           name: Getting authentication token
           command: |
             if ! which aws > /dev/null; then
-              sudo apt-get update && sudo apt-get install -y python3-pip
+              sudo apt-get update --allow-releaseinfo-change && sudo apt-get install -y python3-pip
               sudo pip3 install awscli
             fi
 
