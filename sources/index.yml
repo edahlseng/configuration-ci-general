@@ -328,7 +328,7 @@ commands:
 
                 echo "Installing Node.js"
                 curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
-                sudo apt-get install -y nodejs
+                sudo apt-get update --allow-releaseinfo-change && sudo apt-get install -y nodejs
                 echo ""
 
                 npm ci
@@ -339,7 +339,7 @@ commands:
 
               echo "Installing Node.js"
               curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
-              sudo apt-get install -y nodejs
+              sudo apt-get update --allow-releaseinfo-change && sudo apt-get install -y nodejs
               echo ""
 
               npm install
