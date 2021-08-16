@@ -8,7 +8,12 @@ orbs:
 workflows:
   main:
     jobs:
-      - general/install-dependencies-npm
+      - general/install-dependencies-npm:
+          setup-steps:
+            - run:
+                name: Fix apt-get
+                command: |
+                  sudo apt-get update --allow-releaseinfo-change
       - general/lint-commit:
           requires:
             - general/install-dependencies-npm
