@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.3"></a>
+## [0.1.3](https://github.com/shapertools/configuration-ci-general/compare/v0.1.0...v0.1.3) (2021-08-16)
+
+
+### Bug Fixes
+
+* Also fix old orb ([5d5ec5f](https://github.com/shapertools/configuration-ci-general/commit/5d5ec5f))
+* Also fix these ([2a12732](https://github.com/shapertools/configuration-ci-general/commit/2a12732))
+* Fix debian versioning issue ([5bbb849](https://github.com/shapertools/configuration-ci-general/commit/5bbb849))
+
+
+
 <a name="0.1.2"></a>
 ## [0.1.2](https://github.com/shapertools/configuration-ci-general/compare/v0.1.0...v0.1.2) (2021-08-16)
 
