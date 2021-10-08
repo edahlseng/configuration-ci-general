@@ -319,7 +319,26 @@ commands:
       - run:
           name: Installing NPM dependencies
           command: |
-            if [[ -e "package-lock.json" ]]; then
+            if [[ -e "yarn.lock" ]]; then
+              if [[ -d "node_modules" ]]; then
+                echo "Cached node_modules found. Skipping install step."
+              else
+                echo "package-lock.json found, but no cached modules found. Installing with \`yarn install --frozen-lockfile\`..."
+                echo ""
+
+                echo "Installing Node.js"
+                sudo apt-get update --allow-releaseinfo-change
+                curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
+                sudo apt-get install -y nodejs
+                echo ""
+
+                echo "Installing Yarn"
+                npm install --global yarn
+                echo ""
+
+                yarn install --frozen-lockfile
+              fi
+            elif [[ -e "package-lock.json" ]]; then
               if [[ -d "node_modules" ]]; then
                 echo "Cached node_modules found. Skipping install step."
               else
