@@ -3,17 +3,12 @@ version: 2.1
 orbs:
   circleci-cli: circleci/circleci-cli@0.1.8
   orbs: circleci/orb-tools@10.0.0
-  general: shapertools/general@0.0.1
+  general: shapertools/general@0.1.4
 
 workflows:
   main:
     jobs:
-      - general/install-dependencies-npm:
-          setup-steps:
-            - run:
-                name: Fix apt-get
-                command: |
-                  sudo apt-get update --allow-releaseinfo-change
+      - general/install-dependencies-npm
       - general/lint-commit:
           requires:
             - general/install-dependencies-npm
