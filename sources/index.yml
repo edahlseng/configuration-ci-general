@@ -332,10 +332,6 @@ commands:
                 sudo apt-get install -y nodejs
                 echo ""
 
-                echo "Installing Yarn"
-                npm install --global yarn
-                echo ""
-
                 yarn install --frozen-lockfile
               fi
             elif [[ -e "package-lock.json" ]]; then
