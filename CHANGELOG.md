@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.4"></a>
+## [0.3.4](https://github.com/shapertools/configuration-ci-general/compare/v0.3.3...v0.3.4) (2021-10-11)
+
+
+### Bug Fixes
+
+* Specify a modern version of docker by default ([60e4a33](https://github.com/shapertools/configuration-ci-general/commit/60e4a33))
+
+
+
 <a name="0.3.3"></a>
 ## [0.3.3](https://github.com/shapertools/configuration-ci-general/compare/v0.3.2...v0.3.3) (2021-10-11)
 
