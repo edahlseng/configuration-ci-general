@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.5"></a>
+## [0.3.5](https://github.com/shapertools/configuration-ci-general/compare/v0.3.4...v0.3.5) (2021-10-11)
+
+
+### Bug Fixes
+
+* Just use a new step for yarn stuff ([b24d796](https://github.com/shapertools/configuration-ci-general/commit/b24d796))
+* Specify a modern (but compatible with circle) version of docker ([4676cdd](https://github.com/shapertools/configuration-ci-general/commit/4676cdd))
+
+
+
 <a name="0.3.4"></a>
 ## [0.3.4](https://github.com/shapertools/configuration-ci-general/compare/v0.3.3...v0.3.4) (2021-10-11)
 
