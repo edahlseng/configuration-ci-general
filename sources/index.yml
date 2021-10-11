@@ -1233,11 +1233,15 @@ jobs:
       docker_layer_caching:
         type: boolean
         default: false
+      docker-version:
+        type: string
+        default: 20.10.9
     executor: buildpack-deps
     steps:
       - get-workspace
       - setup_remote_docker:
           docker_layer_caching: << parameters.docker_layer_caching >>
+          version: << parameters.docker-version >>
       - steps: << parameters.setup-steps >>
       - run:
           name: Building Docker image
