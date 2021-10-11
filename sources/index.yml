@@ -312,18 +312,18 @@ commands:
             docker rm "${containerId}" > /dev/null
 
             exit ${statusCode}
-  install-dependencies-npm:
+  install-dependencies-yarn:
     steps:
       - restore_cache:
-          key: node_modules-{{ arch }}-{{ checksum "package-lock.json" }}
+          key: node_modules-{{ arch }}-{{ checksum "yarn.lock" }}
       - run:
-          name: Installing NPM dependencies
+          name: Installing Yarn dependencies
           command: |
             if [[ -e "yarn.lock" ]]; then
               if [[ -d "node_modules" ]]; then
                 echo "Cached node_modules found. Skipping install step."
               else
-                echo "package-lock.json found, but no cached modules found. Installing with \`yarn install --frozen-lockfile\`..."
+                echo "yarn.lock found, but no cached modules found. Installing with \`yarn install --frozen-lockfile\`..."
                 echo ""
 
                 echo "Installing Node.js"
@@ -334,7 +334,30 @@ commands:
 
                 yarn install --frozen-lockfile
               fi
-            elif [[ -e "package-lock.json" ]]; then
+            elif [[ -e "package.json" ]]; then
+              echo "No yarn.lock found, but package.json found. Installing with \`yarn install --frozen-lockfile\`..."
+              echo ""
+
+              echo "Installing Node.js"
+              sudo apt-get update --allow-releaseinfo-change
+              curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
+              sudo apt-get install -y nodejs
+              echo ""
+
+              npm install
+            fi
+      - save_cache:
+          key: node_modules-{{ arch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
+  install-dependencies-npm:
+    steps:
+      - restore_cache:
+          key: node_modules-{{ arch }}-{{ checksum "package-lock.json" }}
+      - run:
+          name: Installing NPM dependencies
+          command: |
+            if [[ -e "package-lock.json" ]]; then
               if [[ -d "node_modules" ]]; then
                 echo "Cached node_modules found. Skipping install step."
               else
@@ -639,6 +662,17 @@ jobs:
       - checkout
       - steps: << parameters.setup-steps >>
       - install-dependencies-npm
+      - put-all
+  install-dependencies-yarn:
+    parameters:
+      setup-steps:
+        type: steps
+        default: []
+    executor: node
+    steps:
+      - checkout
+      - steps: << parameters.setup-steps >>
+      - install-dependencies-yarn
       - put-all
   lint:
     parameters:
@@ -1235,7 +1269,7 @@ jobs:
         default: false
       docker-version:
         type: string
-        default: 20.10.9
+        default: 20.10.7
     executor: buildpack-deps
     steps:
       - get-workspace
