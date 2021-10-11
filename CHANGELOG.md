@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.3"></a>
+## [0.3.3](https://github.com/shapertools/configuration-ci-general/compare/v0.3.2...v0.3.3) (2021-10-11)
+
+
+### Bug Fixes
+
+* Try this node image (since it's buster) ([b52b049](https://github.com/shapertools/configuration-ci-general/commit/b52b049))
+
+
+
 <a name="0.3.2"></a>
 ## [0.3.2](https://github.com/shapertools/configuration-ci-general/compare/v0.3.1...v0.3.2) (2021-10-11)
 
