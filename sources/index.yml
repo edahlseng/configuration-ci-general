@@ -1235,7 +1235,7 @@ jobs:
         default: false
       docker-version:
         type: string
-        default: 20.10.9
+        default: 20.10.7
     executor: buildpack-deps
     steps:
       - get-workspace
