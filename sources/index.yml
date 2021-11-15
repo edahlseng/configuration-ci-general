@@ -11,6 +11,7 @@ executors:
     docker:
       - image: circleci/node:12.22-buster
         user: circleci
+    resource_class: medium+
   buildpack-deps:
     docker:
       - image: circleci/buildpack-deps:buster
