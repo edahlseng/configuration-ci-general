@@ -640,7 +640,10 @@ jobs:
       setup-steps:
         type: steps
         default: []
-    executor: buildpack-deps
+      executor:
+        type: executor
+        default: buildpack-deps
+    executor: << parameters.executor >>
     steps:
       - checkout
       - steps: << parameters.setup-steps >>
@@ -658,7 +661,10 @@ jobs:
       setup-steps:
         type: steps
         default: []
-    executor: node
+      executor:
+        type: executor
+        default: node
+    executor: << parameters.executor >>
     steps:
       - checkout
       - steps: << parameters.setup-steps >>
@@ -669,7 +675,10 @@ jobs:
       setup-steps:
         type: steps
         default: []
-    executor: node
+      executor:
+        type: executor
+        default: node
+    executor: << parameters.executor >>
     steps:
       - checkout
       - steps: << parameters.setup-steps >>
