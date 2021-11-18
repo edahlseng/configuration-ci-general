@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.9"></a>
+## [0.3.9](https://github.com/shapertools/configuration-ci-general/compare/v0.3.8...v0.3.9) (2021-11-18)
+
+
+### Bug Fixes
+
+* Sets timeout to 20 mins ([f91d7d6](https://github.com/shapertools/configuration-ci-general/commit/f91d7d6))
+
+
+
 <a name="0.3.8"></a>
 ## [0.3.8](https://github.com/shapertools/configuration-ci-general/compare/v0.3.7...v0.3.8) (2021-11-18)
 
