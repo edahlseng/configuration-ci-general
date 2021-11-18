@@ -1280,7 +1280,10 @@ jobs:
       docker-version:
         type: string
         default: 20.10.7
-    executor: buildpack-deps
+      executor:
+        type: executor
+        default: buildpack-deps
+    executor: << parameters.executor >>
     steps:
       - get-workspace
       - setup_remote_docker:
