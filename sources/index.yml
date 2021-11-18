@@ -1293,6 +1293,7 @@ jobs:
       - run:
           name: Building Docker image
           command: docker build --file << parameters.dockerfile-path >> --tag << parameters.tag >> << parameters.build-options >> << parameters.path >>
+          no_output_timeout: 20m
       - run:
           name: Pushing Docker image
           command: docker push << parameters.tag >>
