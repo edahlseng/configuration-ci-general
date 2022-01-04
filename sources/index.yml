@@ -5,6 +5,7 @@ description: General purpose continuous integration configuration
 orbs:
   circleci-cli: circleci/circleci-cli@0.1.8
   orbs: circleci/orb-tools@10.0.0
+  node: circleci/node@5.0.0
 
 executors:
   node:
@@ -315,6 +316,8 @@ commands:
             exit ${statusCode}
   install-dependencies-yarn:
     steps:
+      - node/install:
+          install-yarn: true
       - restore_cache:
           key: node_modules-{{ arch }}-{{ checksum "yarn.lock" }}
       - run:
@@ -327,25 +330,13 @@ commands:
                 echo "yarn.lock found, but no cached modules found. Installing with \`yarn install --frozen-lockfile\`..."
                 echo ""
 
-                echo "Installing Node.js"
-                sudo apt-get update --allow-releaseinfo-change
-                curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
-                sudo apt-get install -y nodejs
-                echo ""
-
                 yarn install --frozen-lockfile
               fi
             elif [[ -e "package.json" ]]; then
-              echo "No yarn.lock found, but package.json found. Installing with \`yarn install --frozen-lockfile\`..."
+              echo "No yarn.lock found, but package.json found. Installing with \`yarn install\`..."
               echo ""
 
-              echo "Installing Node.js"
-              sudo apt-get update --allow-releaseinfo-change
-              curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
-              sudo apt-get install -y nodejs
-              echo ""
-
-              npm install
+              yarn install
             fi
       - save_cache:
           key: node_modules-{{ arch }}-{{ checksum "yarn.lock" }}
@@ -353,6 +344,7 @@ commands:
             - node_modules
   install-dependencies-npm:
     steps:
+      - node/install
       - restore_cache:
           key: node_modules-{{ arch }}-{{ checksum "package-lock.json" }}
       - run:
@@ -365,22 +357,10 @@ commands:
                 echo "package-lock.json found, but no cached modules found. Installing with \`npm ci\`..."
                 echo ""
 
-                echo "Installing Node.js"
-                sudo apt-get update --allow-releaseinfo-change
-                curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
-                sudo apt-get install -y nodejs
-                echo ""
-
                 npm ci
               fi
             elif [[ -e "package.json" ]]; then
               echo "No package-lock.json found, but package.json found. Installing with \`npm install\`..."
-              echo ""
-
-              echo "Installing Node.js"
-              sudo apt-get update --allow-releaseinfo-change
-              curl -sL https://deb.nodesource.com/setup_12.x | sudo bash -
-              sudo apt-get install -y nodejs
               echo ""
 
               npm install
