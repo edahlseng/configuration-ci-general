@@ -315,9 +315,13 @@ commands:
 
             exit ${statusCode}
   install-dependencies-yarn:
+    parameters:
+      install-yarn:
+        type: boolean
+        default: true
     steps:
       - node/install:
-          install-yarn: true
+          install-yarn: << parameters.install-yarn >>
       - restore_cache:
           key: node_modules-{{ arch }}-{{ checksum "yarn.lock" }}
       - run:
@@ -652,6 +656,9 @@ jobs:
       - put-all
   install-dependencies-yarn:
     parameters:
+      install-yarn:
+        type: boolean
+        default: true
       setup-steps:
         type: steps
         default: []
@@ -662,7 +669,8 @@ jobs:
     steps:
       - checkout
       - steps: << parameters.setup-steps >>
-      - install-dependencies-yarn
+      - install-dependencies-yarn:
+          install-yarn: << parameters.install-yarn >>
       - put-all
   lint:
     parameters:
