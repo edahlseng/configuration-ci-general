@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. See [standa
 <a name="0.3.11"></a>
 ## [0.3.11](https://github.com/shapertools/configuration-ci-general/compare/v0.3.10...v0.3.11) (2022-01-21)
 
-
+* Makes yarn install optional
 
 <a name="0.3.10"></a>
 ## [0.3.10](https://github.com/shapertools/configuration-ci-general/compare/v0.3.9...v0.3.10) (2022-01-04)
