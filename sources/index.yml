@@ -153,6 +153,9 @@ commands:
       profile-name:
         type: string
         default: infrastructure
+      region:
+        type: string
+        default: us-east-1
     steps:
       - run:
           name: Configuring AWS profile
@@ -167,6 +170,7 @@ commands:
             [<< parameters.profile-name >>]
             source_profile = << parameters.profile-name >>-credentials
             role_arn = ${<< parameters.aws-role-variable-name >>}
+            region = ${<< parameters.region. >>}
 
             EOF
 
