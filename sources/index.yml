@@ -170,7 +170,7 @@ commands:
             [<< parameters.profile-name >>]
             source_profile = << parameters.profile-name >>-credentials
             role_arn = ${<< parameters.aws-role-variable-name >>}
-            region = ${<< parameters.region. >>}
+            region = << parameters.region. >>
 
             EOF
 
