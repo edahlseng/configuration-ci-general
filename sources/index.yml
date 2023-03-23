@@ -1409,7 +1409,7 @@ jobs:
             function withoutOpenPrs() {
               read -d '' workspaces
               for openPrWorkspace in $(openPrWorkspaces); do
-                workspaces=$(echo "${workspaces[@]}" | grep -v "${openPrWorkspace}")
+                workspaces=$(echo "${workspaces[@]}" | grep -vx "${openPrWorkspace}")
               done
               echo "${workspaces[@]}"
             }
