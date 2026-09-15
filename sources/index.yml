@@ -647,6 +647,10 @@ commands:
             # Create minimal semantic-release config
             echo '{"branches":["master","main"],"tagFormat":"${version}","plugins":["@semantic-release/commit-analyzer"]}' > .releaserc.json
 
+            # semantic-release always verifies push access via `git ls-remote` over HTTPS,
+            # even with only commit-analyzer configured, so it needs a GH_TOKEN to authenticate.
+            export GH_TOKEN="${RELEASE_BOT_GITHUB_TOKEN}"
+
             # Run semantic-release in dry-run mode
             echo "Running semantic-release --dry-run..."
             OUTPUT=$(npx --yes semantic-release --dry-run --no-ci 2>&1) || true
